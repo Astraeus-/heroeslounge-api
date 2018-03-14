@@ -8,10 +8,10 @@ const API = '/api/' + VERSION
 // Heroes Lounge API Methods.
 const hlAPI = {
 
-  getCurrentBans: async() => {
+  getCurrentBans: async () => {
     let info = {}
     info['bans'] = _req('get', Endpoints.BANS()).catch((error) => {
-      throw Error('Error getting bans ' + error)
+      throw Error('Error getting bans ' + '\n' + error)
     })
 
     for (let element in info) {
@@ -23,10 +23,10 @@ const hlAPI = {
     // Add the hero and talent details to each ban.
     for (let ban in info['bans']) {
       let hero = info['bans'][ban].hero_id ? _req('get', Endpoints.HEROES(info['bans'][ban].hero_id)).catch((error) => {
-        if (error) throw Error('Hero with ID ' + info['bans'][ban].hero_id + ' does not exist')
+        throw Error('Hero with ID ' + info['bans'][ban].hero_id + ' does not exist' + '\n' + error)
       }) : null
       let talent = info['bans'][ban].talent_id ? _req('get', Endpoints.TALENTS(info['bans'][ban].talent_id)).catch((error) => {
-        if (error) throw Error('Talent with ID ' + info['bans'][ban].talent_id + ' does not exist')
+        throw Error('Talent with ID ' + info['bans'][ban].talent_id + ' does not exist' + '\n' + error)
       }) : null
 
       delete info['bans'][ban].hero_id
@@ -38,14 +38,14 @@ const hlAPI = {
     return info['bans']
   },
 
-  getDivisionInfo: async(divisionID) => {
+  getDivisionInfo: async (divisionID) => {
     if (!divisionID) throw Error('Division ID is not defined')
     let info = {}
     info['division'] = _req('get', Endpoints.DIVISIONS(divisionID)).catch((error) => {
-      if (error) throw Error('Division with ID ' + divisionID + ' does not exist')
+      throw Error('Division with ID ' + divisionID + ' does not exist' + '\n' + error)
     })
     info['teams'] = _req('get', Endpoints.DIVISION_TEAMS(divisionID)).catch((error) => {
-      if (error) throw Error('Teams for division with ID ' + divisionID + ' do not exist')
+      throw Error('Teams for division with ID ' + divisionID + ' do not exist' + '\n' + error)
     })
 
     for (let element in info) {
@@ -55,11 +55,11 @@ const hlAPI = {
     return info
   },
 
-  getHeroInfo: async(heroID) => {
+  getHeroInfo: async (heroID) => {
     if (!heroID) throw Error('Hero ID is not defined')
     let info = {}
     info['hero'] = _req('get', Endpoints.HEROES(heroID)).catch((error) => {
-      if (error) throw Error('Hero with ID ' + heroID + ' does not exist')
+      throw Error('Hero with ID ' + heroID + ' does not exist' + '\n' + error)
     })
 
     for (let element in info) {
@@ -69,10 +69,10 @@ const hlAPI = {
     return info['hero']
   },
 
-  getMatchesToday: async() => {
+  getMatchesToday: async () => {
     let info = {}
     info['matches'] = _req('get', Endpoints.MATCHES_TODAY()).catch((error) => {
-      throw Error("Error getting today's matches " + error)
+      throw Error('Error getting today\'s matches ' + '\n' + error)
     })
 
     for (let element in info) {
@@ -81,13 +81,13 @@ const hlAPI = {
 
     for (let match in info['matches']) {
       let teams = info['matches'][match].id ? _req('get', Endpoints.MATCH_TEAMS(info['matches'][match].id)).catch((error) => {
-        if (error) throw Error('Teams for match with ID ' + info['matches'][match].id + ' do not exist')
+        throw Error('Teams for match with ID ' + info['matches'][match].id + ' do not exist' + '\n' + error)
       }) : null
       let twitch = info['matches'][match].channel_id ? _req('get', Endpoints.TWITCH_CHANNELS(info['matches'][match].channel_id)).catch((error) => {
-        if (error) throw Error('Twitch channel for match with ID ' + info['matches'][match].id + ' does not exist')
+        throw Error('Twitch channel for match with ID ' + info['matches'][match].id + ' does not exist' + '\n' + error)
       }) : null
       let casters = info['matches'][match].channel_id ? await _req('get', Endpoints.MATCH_CASTERS(info['matches'][match].id)).catch((error) => {
-        if (error) throw Error('Casters for match with ID ' + info['matches'][match].id + ' do not exist')
+        throw Error('Casters for match with ID ' + info['matches'][match].id + ' do not exist' + '\n' + error)
       }) : null
 
       // Filters out the denied casters, leaving only the accepted casters.
@@ -102,26 +102,26 @@ const hlAPI = {
     return info['matches']
   },
 
-  getMatchInfo: async(matchID) => {
+  getMatchInfo: async (matchID) => {
     if (!matchID) throw Error('Match ID is not defined')
     let info = {}
     info['match'] = await _req('get', Endpoints.MATCHES(matchID)).catch((error) => {
-      if (error) throw Error('Match with ID ' + matchID + ' does not exist')
+      throw Error('Match with ID ' + matchID + ' does not exist' + '\n' + error)
     })
     info['teams'] = _req('get', Endpoints.MATCH_TEAMS(matchID)).catch((error) => {
-      if (error) throw Error('Teams for match with ID ' + matchID + ' do not exist')
+      throw Error('Teams for match with ID ' + matchID + ' do not exist' + '\n' + error)
     })
     info['twitch'] = info['match'].channel_id ? _req('get', Endpoints.TWITCH_CHANNELS(info['match'].channel_id)).catch((error) => {
-      if (error) throw Error('Twitch channel for match with ID ' + matchID + ' does not exist')
+      throw Error('Twitch channel for match with ID ' + matchID + ' does not exist' + '\n' + error)
     }) : null
     info['casters'] = info['match'].channel_id ? _req('get', Endpoints.MATCH_CASTERS(matchID)).catch((error) => {
-      if (error) throw Error('Casters for match with ID ' + matchID + ' do not exist')
+      throw Error('Casters for match with ID ' + matchID + ' do not exist' + '\n' + error)
     }) : null
     info['games'] = _req('get', Endpoints.MATCH_GAMES(matchID)).catch((error) => {
-      if (error) throw Error('Games for match with ID ' + matchID + ' do not exist')
+      throw Error('Games for match with ID ' + matchID + ' do not exist' + '\n' + error)
     })
     info['replays'] = _req('get', Endpoints.MATCH_REPLAYS(matchID)).catch((error) => {
-      if (error) throw Error('Replays for match with ID ' + matchID + ' do not exist')
+      throw Error('Replays for match with ID ' + matchID + ' do not exist' + '\n' + error)
     })
 
     for (let element in info) {
@@ -131,17 +131,17 @@ const hlAPI = {
     return info
   },
 
-  getPlayoffInfo: async(playoffID) => {
+  getPlayoffInfo: async (playoffID) => {
     if (!playoffID) throw Error('Playoff ID is not defined')
     let info = {}
     info['playoff'] = _req('get', Endpoints.PLAYOFFS(playoffID)).catch((error) => {
-      if (error) throw Error('Playoff with ID ' + playoffID + ' does not exist')
+      throw Error('Playoff with ID ' + playoffID + ' does not exist' + '\n' + error)
     })
     info['divisions'] = _req('get', Endpoints.PLAYOFF_DIVISIONS(playoffID)).catch((error) => {
-      if (error) throw Error('Divisions for playoff with ID ' + playoffID + ' do not exist')
+      throw Error('Divisions for playoff with ID ' + playoffID + ' do not exist' + '\n' + error)
     })
     info['matches'] = _req('get', Endpoints.PLAYOFF_MATCHES(playoffID)).catch((error) => {
-      if (error) throw Error('Matches for playoff with ID ' + playoffID + ' do not exist')
+      throw Error('Matches for playoff with ID ' + playoffID + ' do not exist' + '\n' + error)
     })
 
     for (let element in info) {
@@ -151,11 +151,11 @@ const hlAPI = {
     return info
   },
 
-  getSeasonCasterStatistics: async(seasonID) => {
+  getSeasonCasterStatistics: async (seasonID) => {
     if (!seasonID) throw Error('Season ID is not defined')
     let info = {}
     info['statistics'] = _req('get', Endpoints.SEASON_CASTER_STATISTICS(seasonID)).catch((error) => {
-      if (error) throw Error('Season with ID ' + seasonID + ' does not exist')
+      throw Error('Season with ID ' + seasonID + ' does not exist' + '\n' + error)
     })
 
     for (let element in info) {
@@ -165,17 +165,17 @@ const hlAPI = {
     return info['statistics']
   },
 
-  getSeasonInfo: async(seasonID) => {
+  getSeasonInfo: async (seasonID) => {
     if (!seasonID) throw Error('Season ID is not defined')
     let info = {}
     info['season'] = _req('get', Endpoints.SEASONS(seasonID)).catch((error) => {
-      if (error) throw Error('Season with ID ' + seasonID + ' does not exist')
+      throw Error('Season with ID ' + seasonID + ' does not exist' + '\n' + error)
     })
     info['divisions'] = _req('get', Endpoints.DIVISIONS()).catch((error) => {
-      if (error) throw Error('Can not get divisions ' + error)
+      throw Error('Can not get divisions ' + error)
     })
     info['playoffs'] = _req('get', Endpoints.SEASON_PLAYOFFS(seasonID)).catch((error) => {
-      if (error) throw Error('Playoffs for season with ID ' + seasonID + ' do not exist')
+      throw Error('Playoffs for season with ID ' + seasonID + ' do not exist' + '\n' + error)
     })
 
     for (let element in info) {
@@ -194,11 +194,11 @@ const hlAPI = {
     return info
   },
 
-  getSlothInfo: async(slothID) => {
+  getSlothInfo: async (slothID) => {
     if (!slothID) throw Error('Sloth ID is not defined')
     let info = {}
     info['sloth'] = _req('get', Endpoints.SLOTHS(slothID)).catch((error) => {
-      if (error) throw Error('Sloth with ID ' + slothID + ' does not exist')
+      throw Error('Sloth with ID ' + slothID + ' does not exist' + '\n' + error)
     })
 
     for (let element in info) {
@@ -208,11 +208,11 @@ const hlAPI = {
     return info['sloth']
   },
 
-  getTalentInfo: async(talentID) => {
+  getTalentInfo: async (talentID) => {
     if (!talentID) throw Error('Talent ID is not defined')
     let info = {}
     info['talent'] = _req('get', Endpoints.TALENTS(talentID)).catch((error) => {
-      if (error) throw Error('Talent with ID ' + talentID + ' does not exist')
+      throw Error('Talent with ID ' + talentID + ' does not exist' + '\n' + error)
     })
 
     for (let element in info) {
@@ -222,17 +222,17 @@ const hlAPI = {
     return info['talent']
   },
 
-  getTeamInfo: async(teamID) => {
+  getTeamInfo: async (teamID) => {
     if (!teamID) throw Error('Team ID is not defined')
     let info = {}
     info['team'] = _req('get', Endpoints.TEAMS(teamID)).catch((error) => {
-      if (error) throw Error('Team with ID ' + teamID + ' does not exist')
+      throw Error('Team with ID ' + teamID + ' does not exist' + '\n' + error)
     })
     info['logo'] = _req('get', Endpoints.TEAM_LOGO(teamID)).catch((error) => {
-      if (error) throw Error('Logo for team with ID ' + teamID + ' does not exist')
+      throw Error('Logo for team with ID ' + teamID + ' does not exist' + '\n' + error)
     })
     info['sloths'] = _req('get', Endpoints.TEAM_SLOTHS(teamID)).catch((error) => {
-      if (error) throw Error('Sloths for team with ID ' + teamID + ' do not exist')
+      throw Error('Sloths for team with ID ' + teamID + ' do not exist' + '\n' + error)
     })
 
     for (let element in info) {
@@ -242,14 +242,14 @@ const hlAPI = {
     return info
   },
 
-  getTeamMatches: async(teamID) => {
+  getTeamMatches: async (teamID) => {
     if (!teamID) throw Error('Team ID is not defined')
     let info = {}
     info['team'] = _req('get', Endpoints.TEAMS(teamID)).catch((error) => {
-      if (error) throw Error('Team with ID ' + teamID + ' does not exist')
+      throw Error('Team with ID ' + teamID + ' does not exist' + '\n' + error)
     })
     info['matches'] = _req('get', Endpoints.TEAM_MATCHES(teamID)).catch((error) => {
-      if (error) throw Error('Matches for team with ID ' + teamID + ' do not exist')
+      throw Error('Matches for team with ID ' + teamID + ' do not exist' + '\n' + error)
     })
 
     for (let element in info) {
@@ -259,14 +259,14 @@ const hlAPI = {
     return info
   },
 
-  getTeamTimelineEntries: async(teamID) => {
+  getTeamTimelineEntries: async (teamID) => {
     if (!teamID) throw Error('Team ID is not defined')
     let info = {}
     info['team'] = _req('get', Endpoints.TEAMS(teamID)).catch((error) => {
-      if (error) throw Error('Team with ID ' + teamID + ' does not exist')
+      throw Error('Team with ID ' + teamID + ' does not exist' + '\n' + error)
     })
     info['entries'] = _req('get', Endpoints.TEAM_TIMELINE(teamID)).catch((error) => {
-      if (error) throw Error('Timeline for team with ID ' + teamID + ' does not exist')
+      throw Error('Timeline for team with ID ' + teamID + ' does not exist' + '\n' + error)
     })
 
     for (let element in info) {
