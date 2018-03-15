@@ -8,19 +8,34 @@ const API = '/api/' + VERSION
 // Heroes Lounge API Methods.
 const hlAPI = {
 
-  getCurrentBans: async () => {
+  getBans: async () => {
     let info = {}
-    info['bans'] = _req('get', Endpoints.BANS()).catch((error) => {
-      throw Error('Error getting bans ' + '\n' + error)
+    let banData = {}
+    let currentPage
+    let lastPage
+
+    info['bans'] = []
+
+    await _req('get', Endpoints.BANS()).then((response) => {
+      banData[1] = response
+      currentPage = response.current_page
+      currentPage++
+      lastPage = response.last_page
+    }).catch((error) => {
+      throw Error('Bans initial page' + '\n' + error)
     })
 
-    for (let element in info) {
-      info[element] = await info[element]
+    for (let i = currentPage; i <= lastPage; i++) {
+      banData[i] = _req('get', Endpoints.BANS() + '?page=' + i).catch((error) => {
+        throw Error('Bans on page ' + currentPage + '\n' + error)
+      })
     }
 
-    info['bans'] = info['bans'].data
+    for (let element in banData) {
+      banData[element] = await banData[element]
+      info['bans'] = info['bans'].concat(banData[element].data)
+    }
 
-    // Add the hero and talent details to each ban.
     for (let ban in info['bans']) {
       let hero = info['bans'][ban].hero_id ? _req('get', Endpoints.HEROES(info['bans'][ban].hero_id)).catch((error) => {
         throw Error('Hero with ID ' + info['bans'][ban].hero_id + ' does not exist' + '\n' + error)
@@ -35,6 +50,7 @@ const hlAPI = {
       delete info['bans'][ban].talent_id
       info['bans'][ban]['talent'] = await talent
     }
+
     return info['bans']
   },
 
@@ -66,7 +82,7 @@ const hlAPI = {
       info['divisions'] = info['divisions'].concat(divisionData[element].data)
     }
 
-    return info
+    return info['divisions']
   },
 
   getDivisionInfo: async (divisionID) => {
@@ -114,7 +130,7 @@ const hlAPI = {
       info['heroes'] = info['heroes'].concat(heroData[element].data)
     }
 
-    return info
+    return info['heroes']
   },
 
   getHeroInfo: async (heroID) => {
@@ -159,7 +175,7 @@ const hlAPI = {
       info['matches'] = info['matches'].concat(matchData[element].data)
     }
 
-    return info
+    return info['matches']
   },
 
   getMatchesToday: async () => {
@@ -224,6 +240,37 @@ const hlAPI = {
     return info
   },
 
+  getPlayoffs: async () => {
+    let info = {}
+    let playoffData = {}
+    let currentPage
+    let lastPage
+
+    info['playoffs'] = []
+
+    await _req('get', Endpoints.PLAYOFFS()).then((response) => {
+      playoffData[1] = response
+      currentPage = response.current_page
+      currentPage++
+      lastPage = response.last_page
+    }).catch((error) => {
+      throw Error('Playoffs initial page' + '\n' + error)
+    })
+
+    for (let i = currentPage; i <= lastPage; i++) {
+      playoffData[i] = _req('get', Endpoints.PLAYOFFS() + '?page=' + i).catch((error) => {
+        throw Error('Playoffs on page ' + currentPage + '\n' + error)
+      })
+    }
+
+    for (let element in playoffData) {
+      playoffData[element] = await playoffData[element]
+      info['playoffs'] = info['playoffs'].concat(playoffData[element].data)
+    }
+
+    return info['playoffs']
+  },
+
   getPlayoffInfo: async (playoffID) => {
     if (!playoffID) throw Error('Playoff ID is not defined')
     let info = {}
@@ -256,6 +303,37 @@ const hlAPI = {
     }
 
     return info['statistics']
+  },
+
+  getSeasons: async () => {
+    let info = {}
+    let seasonData = {}
+    let currentPage
+    let lastPage
+
+    info['seasons'] = []
+
+    await _req('get', Endpoints.SEASONS()).then((response) => {
+      seasonData[1] = response
+      currentPage = response.current_page
+      currentPage++
+      lastPage = response.last_page
+    }).catch((error) => {
+      throw Error('Seasons initial page' + '\n' + error)
+    })
+
+    for (let i = currentPage; i <= lastPage; i++) {
+      seasonData[i] = _req('get', Endpoints.SEASONS() + '?page=' + i).catch((error) => {
+        throw Error('Playoffs on page ' + currentPage + '\n' + error)
+      })
+    }
+
+    for (let element in seasonData) {
+      seasonData[element] = await seasonData[element]
+      info['seasons'] = info['seasons'].concat(seasonData[element].data)
+    }
+
+    return info['seasons']
   },
 
   getSeasonInfo: async (seasonID) => {
@@ -306,7 +384,7 @@ const hlAPI = {
       info['sloths'] = info['sloths'].concat(slothData[element].data)
     }
 
-    return info
+    return info['sloths']
   },
 
   getSlothInfo: async (slothID) => {
@@ -351,7 +429,7 @@ const hlAPI = {
       info['talents'] = info['talents'].concat(talentData[element].data)
     }
 
-    return info
+    return info['talents']
   },
 
   getTalentInfo: async (talentID) => {
@@ -396,7 +474,7 @@ const hlAPI = {
       info['teams'] = info['teams'].concat(teamData[element].data)
     }
 
-    return info
+    return info['teams']
   },
 
   getTeamInfo: async (teamID) => {
@@ -455,7 +533,7 @@ const hlAPI = {
 
 }
 
-// Makes the Request to the Heroes Lounge API.
+// Makes a request to the Heroes Lounge API.
 let _req = (type, endpoint) => {
   return new Promise((resolve, reject) => {
     const options = {
