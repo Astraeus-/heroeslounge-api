@@ -56,7 +56,7 @@ const hlAPI = {
     })
 
     for (let i = currentPage; i <= lastPage; i++) {
-      divisionData[currentPage] = _req('get', Endpoints.DIVISIONS() + '?page=' + i).catch((error) => {
+      divisionData[i] = _req('get', Endpoints.DIVISIONS() + '?page=' + i).catch((error) => {
         throw Error('Divisions on page ' + currentPage + '\n' + error)
       })
     }
@@ -202,7 +202,7 @@ const hlAPI = {
     info['season'] = _req('get', Endpoints.SEASONS(seasonID)).catch((error) => {
       throw Error('Season with ID ' + seasonID + ' does not exist' + '\n' + error)
     })
-    info['divisions'] = _req('get', Endpoints.DIVISIONS()).catch((error) => {
+    info['divisions'] = _req('get', Endpoints.SEASON_DIVISIONS(seasonID)).catch((error) => {
       throw Error('Can not get divisions ' + error)
     })
     info['playoffs'] = _req('get', Endpoints.SEASON_PLAYOFFS(seasonID)).catch((error) => {
@@ -212,15 +212,6 @@ const hlAPI = {
     for (let element in info) {
       info[element] = await info[element]
     }
-
-    // Get all of the divisions that belong to the season.
-    let divisions = []
-    for (let div of info['divisions'].data) {
-      if (div.season_id === seasonID && div.playoff_id == null) {
-        divisions.push(div)
-      }
-    }
-    info['divisions'] = divisions
 
     return info
   },
@@ -251,6 +242,37 @@ const hlAPI = {
     }
 
     return info['talent']
+  },
+
+  getTeams: async () => {
+    let info = {}
+    let teamData = {}
+    let currentPage
+    let lastPage
+
+    info['teams'] = []
+
+    await _req('get', Endpoints.TEAMS()).then((response) => {
+      teamData[1] = response
+      currentPage = response.current_page
+      currentPage++
+      lastPage = response.last_page
+    }).catch((error) => {
+      throw Error('Teams initial page' + '\n' + error)
+    })
+
+    for (let i = currentPage; i <= lastPage; i++) {
+      teamData[i] = _req('get', Endpoints.TEAMS() + '?page=' + i).catch((error) => {
+        throw Error('Teams on page ' + currentPage + '\n' + error)
+      })
+    }
+
+    for (let element in teamData) {
+      teamData[element] = await teamData[element]
+      info['teams'] = info['teams'].concat(teamData[element].data)
+    }
+
+    return info
   },
 
   getTeamInfo: async (teamID) => {

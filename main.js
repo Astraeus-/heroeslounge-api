@@ -1,14 +1,11 @@
 
 const hlAPI = require('./index.js')
 
-hlAPI.getSeasonInfo(2).then((response) => {
-  // console.log(response)
+hlAPI.getTeams().then((response) => {
+  response.teams.forEach((team) => {
+    console.log(team.id + ': ' + team.title)
+  })
+}).catch((error) => {
+  console.log(error)
 })
-
-hlAPI.getTeamMatches(2).then((response) => {
-  // console.log(response)
-})
-
-hlAPI.getDivisions().then((response) => {
-  console.log(response)
-})
+// Add specification how many results you'd want to get.
