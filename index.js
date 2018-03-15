@@ -38,6 +38,37 @@ const hlAPI = {
     return info['bans']
   },
 
+  getDivisions: async () => {
+    let info = {}
+    let divisionData = {}
+    let currentPage
+    let lastPage
+
+    info['divisions'] = []
+
+    await _req('get', Endpoints.DIVISIONS()).then((response) => {
+      divisionData[1] = response
+      currentPage = response.current_page
+      currentPage++
+      lastPage = response.last_page
+    }).catch((error) => {
+      throw Error('Divisions initial page' + '\n' + error)
+    })
+
+    for (let i = currentPage; i <= lastPage; i++) {
+      divisionData[currentPage] = _req('get', Endpoints.DIVISIONS() + '?page=' + i).catch((error) => {
+        throw Error('Divisions on page ' + currentPage + '\n' + error)
+      })
+    }
+
+    for (let element in divisionData) {
+      divisionData[element] = await divisionData[element]
+      info['divisions'] = info['divisions'].concat(divisionData[element].data)
+    }
+
+    return info
+  },
+
   getDivisionInfo: async (divisionID) => {
     if (!divisionID) throw Error('Division ID is not defined')
     let info = {}

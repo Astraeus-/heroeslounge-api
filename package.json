@@ -4,6 +4,7 @@
   "description": "A simple library built in node.js to interact with the Heroes Lounge website API",
   "main": "index.js",
   "scripts": {
+    "start": "node main.js",
     "test": "standard"
   },
   "author": "Astraeus-",
