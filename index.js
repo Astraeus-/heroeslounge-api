@@ -86,6 +86,37 @@ const hlAPI = {
     return info
   },
 
+  getHeroes: async () => {
+    let info = {}
+    let heroData = {}
+    let currentPage
+    let lastPage
+
+    info['heroes'] = []
+
+    await _req('get', Endpoints.HEROES()).then((response) => {
+      heroData[1] = response
+      currentPage = response.current_page
+      currentPage++
+      lastPage = response.last_page
+    }).catch((error) => {
+      throw Error('Heroes initial page' + '\n' + error)
+    })
+
+    for (let i = currentPage; i <= lastPage; i++) {
+      heroData[i] = _req('get', Endpoints.HEROES() + '?page=' + i).catch((error) => {
+        throw Error('Heroes on page ' + currentPage + '\n' + error)
+      })
+    }
+
+    for (let element in heroData) {
+      heroData[element] = await heroData[element]
+      info['heroes'] = info['heroes'].concat(heroData[element].data)
+    }
+
+    return info
+  },
+
   getHeroInfo: async (heroID) => {
     if (!heroID) throw Error('Hero ID is not defined')
     let info = {}
@@ -98,6 +129,37 @@ const hlAPI = {
     }
 
     return info['hero']
+  },
+
+  getMatches: async () => {
+    let info = {}
+    let matchData = {}
+    let currentPage
+    let lastPage
+
+    info['matches'] = []
+
+    await _req('get', Endpoints.MATCHES()).then((response) => {
+      matchData[1] = response
+      currentPage = response.current_page
+      currentPage++
+      lastPage = response.last_page
+    }).catch((error) => {
+      throw Error('Matches initial page' + '\n' + error)
+    })
+
+    for (let i = currentPage; i <= lastPage; i++) {
+      matchData[i] = _req('get', Endpoints.MATCHES() + '?page=' + i).catch((error) => {
+        throw Error('Matches on page ' + currentPage + '\n' + error)
+      })
+    }
+
+    for (let element in matchData) {
+      matchData[element] = await matchData[element]
+      info['matches'] = info['matches'].concat(matchData[element].data)
+    }
+
+    return info
   },
 
   getMatchesToday: async () => {
@@ -216,6 +278,37 @@ const hlAPI = {
     return info
   },
 
+  getSloths: async () => {
+    let info = {}
+    let slothData = {}
+    let currentPage
+    let lastPage
+
+    info['sloths'] = []
+
+    await _req('get', Endpoints.SLOTHS()).then((response) => {
+      slothData[1] = response
+      currentPage = response.current_page
+      currentPage++
+      lastPage = response.last_page
+    }).catch((error) => {
+      throw Error('Sloths initial page' + '\n' + error)
+    })
+
+    for (let i = currentPage; i <= lastPage; i++) {
+      slothData[i] = _req('get', Endpoints.SLOTHS() + '?page=' + i).catch((error) => {
+        throw Error('Sloths on page ' + currentPage + '\n' + error)
+      })
+    }
+
+    for (let element in slothData) {
+      slothData[element] = await slothData[element]
+      info['sloths'] = info['sloths'].concat(slothData[element].data)
+    }
+
+    return info
+  },
+
   getSlothInfo: async (slothID) => {
     if (!slothID) throw Error('Sloth ID is not defined')
     let info = {}
@@ -228,6 +321,37 @@ const hlAPI = {
     }
 
     return info['sloth']
+  },
+
+  getTalents: async () => {
+    let info = {}
+    let talentData = {}
+    let currentPage
+    let lastPage
+
+    info['talents'] = []
+
+    await _req('get', Endpoints.TALENTS()).then((response) => {
+      talentData[1] = response
+      currentPage = response.current_page
+      currentPage++
+      lastPage = response.last_page
+    }).catch((error) => {
+      throw Error('Talents initial page' + '\n' + error)
+    })
+
+    for (let i = currentPage; i <= lastPage; i++) {
+      talentData[i] = _req('get', Endpoints.TALENTS() + '?page=' + i).catch((error) => {
+        throw Error('Talents on page ' + currentPage + '\n' + error)
+      })
+    }
+
+    for (let element in talentData) {
+      talentData[element] = await talentData[element]
+      info['talents'] = info['talents'].concat(talentData[element].data)
+    }
+
+    return info
   },
 
   getTalentInfo: async (talentID) => {
