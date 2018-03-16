@@ -1,6 +1,11 @@
 
 const hlAPI = require('./index.js')
 
+// hlAPI.getBanInfo(21).then((response) => {
+//   console.log(response)
+// }).catch((error) => {
+//   console.log(error)
+// })
 // hlAPI.getBans().then((response) => {
 //   console.log(response)
 // }).catch((error) => {
@@ -30,6 +35,11 @@ const hlAPI = require('./index.js')
 //   console.log(error)
 // })
 //
+// hlAPI.getMatchInfo(1).then((response) => {
+//   console.log(response)
+// }).catch((error) => {
+//   console.log(error)
+// })
 // hlAPI.getMatchesToday().then((response) => {
 //   response.forEach((match) => {
 //     console.log(match.id + ': ' + match.teams[0].title + ' VS ' + match.teams[1].title)
@@ -103,5 +113,5 @@ const hlAPI = require('./index.js')
 // })
 
 // Add specification how many results you'd want to get.
-// Allow fetching of a single specified ban.
 // Add a proper test script for all of the functions.
+// Add some form of rate-limiting.

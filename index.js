@@ -63,6 +63,34 @@ const hlAPI = {
     return info['bans']
   },
 
+  getBanInfo: async (banID) => {
+    if (!banID) throw Error('Ban ID is not defined')
+    let info = {}
+    info['ban'] = await _req('get', Endpoints.BANS(banID)).catch((error) => {
+      throw Error('Ban with ID ' + banID + ' does not exist' + '\n' + error)
+    })
+
+    info['ban']['hero'] = info['ban'].hero_id ? _req('get', Endpoints.HEROES(info['ban'].hero_id)).catch((error) => {
+      throw Error('Hero with ID ' + info['ban'].hero_id + ' does not exist' + '\n' + error)
+    }) : null
+    info['ban']['talent'] = info['ban'].talent_id ? _req('get', Endpoints.TALENTS(info['ban'].talent_id)).catch((error) => {
+      throw Error('Talent with ID ' + info['ban'].talent_id + ' does not exist' + '\n' + error)
+    }) : null
+
+    await Promise.all(mapObjectToArray(info['ban'])).then((promiseArray) => {
+      for (let i = 0; i < promiseArray.length; i += 2) {
+        info['ban'][promiseArray[i]] = promiseArray[i + 1]
+      }
+    }).catch((error) => {
+      throw error
+    })
+
+    delete info['ban'].hero_id
+    delete info['ban'].talent_id
+
+    return info
+  },
+
   getDivisions: async () => {
     let info = {}
     let pageData = {}
