@@ -10,14 +10,14 @@ const hlAPI = {
 
   getBans: async () => {
     let info = {}
-    let banData = {}
+    let pageData = {}
     let currentPage
     let lastPage
 
     info['bans'] = []
 
     await _req('get', Endpoints.BANS()).then((response) => {
-      banData[1] = response
+      pageData[1] = response
       currentPage = response.current_page
       currentPage++
       lastPage = response.last_page
@@ -26,29 +26,38 @@ const hlAPI = {
     })
 
     for (let i = currentPage; i <= lastPage; i++) {
-      banData[i] = _req('get', Endpoints.BANS() + '?page=' + i).catch((error) => {
+      pageData[i] = _req('get', Endpoints.BANS() + '?page=' + i).catch((error) => {
         throw Error('Bans on page ' + currentPage + '\n' + error)
       })
     }
 
-    for (let element in banData) {
-      banData[element] = await banData[element]
-      info['bans'] = info['bans'].concat(banData[element].data)
-    }
+    await Promise.all(mapObjectToArray(pageData)).then((promiseArray) => {
+      for (let i = 0; i < promiseArray.length; i += 2) {
+        info['bans'] = info['bans'].concat(promiseArray[i + 1].data)
+      }
+    }).catch((error) => {
+      throw error
+    })
 
     for (let ban in info['bans']) {
-      let hero = info['bans'][ban].hero_id ? _req('get', Endpoints.HEROES(info['bans'][ban].hero_id)).catch((error) => {
+      info['bans'][ban]['hero'] = info['bans'][ban].hero_id ? _req('get', Endpoints.HEROES(info['bans'][ban].hero_id)).catch((error) => {
         throw Error('Hero with ID ' + info['bans'][ban].hero_id + ' does not exist' + '\n' + error)
       }) : null
-      let talent = info['bans'][ban].talent_id ? _req('get', Endpoints.TALENTS(info['bans'][ban].talent_id)).catch((error) => {
+      info['bans'][ban]['talent'] = info['bans'][ban].talent_id ? _req('get', Endpoints.TALENTS(info['bans'][ban].talent_id)).catch((error) => {
         throw Error('Talent with ID ' + info['bans'][ban].talent_id + ' does not exist' + '\n' + error)
       }) : null
 
-      delete info['bans'][ban].hero_id
-      info['bans'][ban]['hero'] = await hero
+      await Promise.all(mapObjectToArray(info['bans'][ban])).then((promiseArray) => {
+        for (let i = 0; i < promiseArray.length; i += 2) {
+          info['bans'][ban][promiseArray[i]] = promiseArray[i + 1]
+        }
+      }).catch((error) => {
+        throw error
+      })
 
+      // Remove no longer needed information.
+      delete info['bans'][ban].hero_id
       delete info['bans'][ban].talent_id
-      info['bans'][ban]['talent'] = await talent
     }
 
     return info['bans']
@@ -56,14 +65,14 @@ const hlAPI = {
 
   getDivisions: async () => {
     let info = {}
-    let divisionData = {}
+    let pageData = {}
     let currentPage
     let lastPage
 
     info['divisions'] = []
 
     await _req('get', Endpoints.DIVISIONS()).then((response) => {
-      divisionData[1] = response
+      pageData[1] = response
       currentPage = response.current_page
       currentPage++
       lastPage = response.last_page
@@ -72,15 +81,18 @@ const hlAPI = {
     })
 
     for (let i = currentPage; i <= lastPage; i++) {
-      divisionData[i] = _req('get', Endpoints.DIVISIONS() + '?page=' + i).catch((error) => {
+      pageData[i] = _req('get', Endpoints.DIVISIONS() + '?page=' + i).catch((error) => {
         throw Error('Divisions on page ' + currentPage + '\n' + error)
       })
     }
 
-    for (let element in divisionData) {
-      divisionData[element] = await divisionData[element]
-      info['divisions'] = info['divisions'].concat(divisionData[element].data)
-    }
+    await Promise.all(mapObjectToArray(pageData)).then((promiseArray) => {
+      for (let i = 0; i < promiseArray.length; i += 2) {
+        info['divisions'] = info['divisions'].concat(promiseArray[i + 1].data)
+      }
+    }).catch((error) => {
+      throw error
+    })
 
     return info['divisions']
   },
@@ -95,23 +107,27 @@ const hlAPI = {
       throw Error('Teams for division with ID ' + divisionID + ' do not exist' + '\n' + error)
     })
 
-    for (let element in info) {
-      info[element] = await info[element]
-    }
+    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
+      for (let i = 0; i < promiseArray.length; i += 2) {
+        info[promiseArray[i]] = promiseArray[i + 1]
+      }
+    }).catch((error) => {
+      throw error
+    })
 
     return info
   },
 
   getHeroes: async () => {
     let info = {}
-    let heroData = {}
+    let pageData = {}
     let currentPage
     let lastPage
 
     info['heroes'] = []
 
     await _req('get', Endpoints.HEROES()).then((response) => {
-      heroData[1] = response
+      pageData[1] = response
       currentPage = response.current_page
       currentPage++
       lastPage = response.last_page
@@ -120,15 +136,18 @@ const hlAPI = {
     })
 
     for (let i = currentPage; i <= lastPage; i++) {
-      heroData[i] = _req('get', Endpoints.HEROES() + '?page=' + i).catch((error) => {
+      pageData[i] = _req('get', Endpoints.HEROES() + '?page=' + i).catch((error) => {
         throw Error('Heroes on page ' + currentPage + '\n' + error)
       })
     }
 
-    for (let element in heroData) {
-      heroData[element] = await heroData[element]
-      info['heroes'] = info['heroes'].concat(heroData[element].data)
-    }
+    await Promise.all(mapObjectToArray(pageData)).then((promiseArray) => {
+      for (let i = 0; i < promiseArray.length; i += 2) {
+        info['heroes'] = info['heroes'].concat(promiseArray[i + 1].data)
+      }
+    }).catch((error) => {
+      throw error
+    })
 
     return info['heroes']
   },
@@ -140,23 +159,27 @@ const hlAPI = {
       throw Error('Hero with ID ' + heroID + ' does not exist' + '\n' + error)
     })
 
-    for (let element in info) {
-      info[element] = await info[element]
-    }
+    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
+      for (let i = 0; i < promiseArray.length; i += 2) {
+        info[promiseArray[i]] = promiseArray[i + 1]
+      }
+    }).catch((error) => {
+      throw error
+    })
 
     return info['hero']
   },
 
   getMatches: async () => {
     let info = {}
-    let matchData = {}
+    let pageData = {}
     let currentPage
     let lastPage
 
     info['matches'] = []
 
     await _req('get', Endpoints.MATCHES()).then((response) => {
-      matchData[1] = response
+      pageData[1] = response
       currentPage = response.current_page
       currentPage++
       lastPage = response.last_page
@@ -165,48 +188,51 @@ const hlAPI = {
     })
 
     for (let i = currentPage; i <= lastPage; i++) {
-      matchData[i] = _req('get', Endpoints.MATCHES() + '?page=' + i).catch((error) => {
+      pageData[i] = _req('get', Endpoints.MATCHES() + '?page=' + i).catch((error) => {
         throw Error('Matches on page ' + currentPage + '\n' + error)
       })
     }
 
-    for (let element in matchData) {
-      matchData[element] = await matchData[element]
-      info['matches'] = info['matches'].concat(matchData[element].data)
-    }
+    await Promise.all(mapObjectToArray(pageData)).then((promiseArray) => {
+      for (let i = 0; i < promiseArray.length; i += 2) {
+        info['matches'] = info['matches'].concat(promiseArray[i + 1].data)
+      }
+    }).catch((error) => {
+      throw error
+    })
 
     return info['matches']
   },
 
   getMatchesToday: async () => {
     let info = {}
-    info['matches'] = _req('get', Endpoints.MATCHES_TODAY()).catch((error) => {
+    info['matches'] = await _req('get', Endpoints.MATCHES_TODAY()).catch((error) => {
       throw Error('Error getting today\'s matches ' + '\n' + error)
     })
 
-    for (let element in info) {
-      info[element] = await info[element]
-    }
-
     for (let match in info['matches']) {
-      let teams = info['matches'][match].id ? _req('get', Endpoints.MATCH_TEAMS(info['matches'][match].id)).catch((error) => {
+      info['matches'][match]['teams'] = info['matches'][match].id ? _req('get', Endpoints.MATCH_TEAMS(info['matches'][match].id)).catch((error) => {
         throw Error('Teams for match with ID ' + info['matches'][match].id + ' do not exist' + '\n' + error)
       }) : null
-      let twitch = info['matches'][match].channel_id ? _req('get', Endpoints.TWITCH_CHANNELS(info['matches'][match].channel_id)).catch((error) => {
+      info['matches'][match]['twitch'] = info['matches'][match].channel_id ? _req('get', Endpoints.TWITCH_CHANNELS(info['matches'][match].channel_id)).catch((error) => {
         throw Error('Twitch channel for match with ID ' + info['matches'][match].id + ' does not exist' + '\n' + error)
       }) : null
-      let casters = info['matches'][match].channel_id ? await _req('get', Endpoints.MATCH_CASTERS(info['matches'][match].id)).catch((error) => {
+      info['matches'][match]['casters'] = info['matches'][match].channel_id ? _req('get', Endpoints.MATCH_CASTERS(info['matches'][match].id)).catch((error) => {
         throw Error('Casters for match with ID ' + info['matches'][match].id + ' do not exist' + '\n' + error)
       }) : null
 
-      // Filters out the denied casters, leaving only the accepted casters.
-      for (let caster in casters) {
-        if (casters[caster].pivot.approved !== 1) delete casters.splice(caster, 1)
-      }
+      await Promise.all(mapObjectToArray(info['matches'][match])).then((promiseArray) => {
+        for (let i = 0; i < promiseArray.length; i += 2) {
+          info['matches'][match][promiseArray[i]] = promiseArray[i + 1]
+        }
+      }).catch((error) => {
+        throw error
+      })
 
-      info['matches'][match]['teams'] = await teams
-      info['matches'][match]['twitch'] = await twitch
-      info['matches'][match]['casters'] = casters
+      // Removes all the casters that are not approved for casting the match.
+      for (let caster in info['matches'][match]['casters']) {
+        if (info['matches'][match]['casters'][caster].pivot.approved !== 1) delete info['matches'][match]['casters'].splice(caster, 1)
+      }
     }
     return info['matches']
   },
@@ -233,23 +259,27 @@ const hlAPI = {
       throw Error('Replays for match with ID ' + matchID + ' do not exist' + '\n' + error)
     })
 
-    for (let element in info) {
-      info[element] = await info[element]
-    }
+    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
+      for (let i = 0; i < promiseArray.length; i += 2) {
+        info[promiseArray[i]] = promiseArray[i + 1]
+      }
+    }).catch((error) => {
+      throw error
+    })
 
     return info
   },
 
   getPlayoffs: async () => {
     let info = {}
-    let playoffData = {}
+    let pageData = {}
     let currentPage
     let lastPage
 
     info['playoffs'] = []
 
     await _req('get', Endpoints.PLAYOFFS()).then((response) => {
-      playoffData[1] = response
+      pageData[1] = response
       currentPage = response.current_page
       currentPage++
       lastPage = response.last_page
@@ -258,15 +288,18 @@ const hlAPI = {
     })
 
     for (let i = currentPage; i <= lastPage; i++) {
-      playoffData[i] = _req('get', Endpoints.PLAYOFFS() + '?page=' + i).catch((error) => {
+      pageData[i] = _req('get', Endpoints.PLAYOFFS() + '?page=' + i).catch((error) => {
         throw Error('Playoffs on page ' + currentPage + '\n' + error)
       })
     }
 
-    for (let element in playoffData) {
-      playoffData[element] = await playoffData[element]
-      info['playoffs'] = info['playoffs'].concat(playoffData[element].data)
-    }
+    await Promise.all(mapObjectToArray(pageData)).then((promiseArray) => {
+      for (let i = 0; i < promiseArray.length; i += 2) {
+        info['playoffs'] = info['playoffs'].concat(promiseArray[i + 1].data)
+      }
+    }).catch((error) => {
+      throw error
+    })
 
     return info['playoffs']
   },
@@ -284,9 +317,13 @@ const hlAPI = {
       throw Error('Matches for playoff with ID ' + playoffID + ' do not exist' + '\n' + error)
     })
 
-    for (let element in info) {
-      info[element] = await info[element]
-    }
+    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
+      for (let i = 0; i < promiseArray.length; i += 2) {
+        info[promiseArray[i]] = promiseArray[i + 1]
+      }
+    }).catch((error) => {
+      throw error
+    })
 
     return info
   },
@@ -298,23 +335,27 @@ const hlAPI = {
       throw Error('Season with ID ' + seasonID + ' does not exist' + '\n' + error)
     })
 
-    for (let element in info) {
-      info[element] = await info[element]
-    }
+    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
+      for (let i = 0; i < promiseArray.length; i += 2) {
+        info[promiseArray[i]] = promiseArray[i + 1]
+      }
+    }).catch((error) => {
+      throw error
+    })
 
     return info['statistics']
   },
 
   getSeasons: async () => {
     let info = {}
-    let seasonData = {}
+    let pageData = {}
     let currentPage
     let lastPage
 
     info['seasons'] = []
 
     await _req('get', Endpoints.SEASONS()).then((response) => {
-      seasonData[1] = response
+      pageData[1] = response
       currentPage = response.current_page
       currentPage++
       lastPage = response.last_page
@@ -323,15 +364,18 @@ const hlAPI = {
     })
 
     for (let i = currentPage; i <= lastPage; i++) {
-      seasonData[i] = _req('get', Endpoints.SEASONS() + '?page=' + i).catch((error) => {
+      pageData[i] = _req('get', Endpoints.SEASONS() + '?page=' + i).catch((error) => {
         throw Error('Playoffs on page ' + currentPage + '\n' + error)
       })
     }
 
-    for (let element in seasonData) {
-      seasonData[element] = await seasonData[element]
-      info['seasons'] = info['seasons'].concat(seasonData[element].data)
-    }
+    await Promise.all(mapObjectToArray(pageData)).then((promiseArray) => {
+      for (let i = 0; i < promiseArray.length; i += 2) {
+        info['seasons'] = info['seasons'].concat(promiseArray[i + 1].data)
+      }
+    }).catch((error) => {
+      throw error
+    })
 
     return info['seasons']
   },
@@ -349,23 +393,27 @@ const hlAPI = {
       throw Error('Playoffs for season with ID ' + seasonID + ' do not exist' + '\n' + error)
     })
 
-    for (let element in info) {
-      info[element] = await info[element]
-    }
+    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
+      for (let i = 0; i < promiseArray.length; i += 2) {
+        info[promiseArray[i]] = promiseArray[i + 1]
+      }
+    }).catch((error) => {
+      throw error
+    })
 
     return info
   },
 
   getSloths: async () => {
     let info = {}
-    let slothData = {}
+    let pageData = {}
     let currentPage
     let lastPage
 
     info['sloths'] = []
 
     await _req('get', Endpoints.SLOTHS()).then((response) => {
-      slothData[1] = response
+      pageData[1] = response
       currentPage = response.current_page
       currentPage++
       lastPage = response.last_page
@@ -374,15 +422,18 @@ const hlAPI = {
     })
 
     for (let i = currentPage; i <= lastPage; i++) {
-      slothData[i] = _req('get', Endpoints.SLOTHS() + '?page=' + i).catch((error) => {
+      pageData[i] = _req('get', Endpoints.SLOTHS() + '?page=' + i).catch((error) => {
         throw Error('Sloths on page ' + currentPage + '\n' + error)
       })
     }
 
-    for (let element in slothData) {
-      slothData[element] = await slothData[element]
-      info['sloths'] = info['sloths'].concat(slothData[element].data)
-    }
+    await Promise.all(mapObjectToArray(pageData)).then((promiseArray) => {
+      for (let i = 0; i < promiseArray.length; i += 2) {
+        info['sloths'] = info['sloths'].concat(promiseArray[i + 1].data)
+      }
+    }).catch((error) => {
+      throw error
+    })
 
     return info['sloths']
   },
@@ -394,23 +445,27 @@ const hlAPI = {
       throw Error('Sloth with ID ' + slothID + ' does not exist' + '\n' + error)
     })
 
-    for (let element in info) {
-      info[element] = await info[element]
-    }
+    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
+      for (let i = 0; i < promiseArray.length; i += 2) {
+        info[promiseArray[i]] = promiseArray[i + 1]
+      }
+    }).catch((error) => {
+      throw error
+    })
 
     return info['sloth']
   },
 
   getTalents: async () => {
     let info = {}
-    let talentData = {}
+    let pageData = {}
     let currentPage
     let lastPage
 
     info['talents'] = []
 
     await _req('get', Endpoints.TALENTS()).then((response) => {
-      talentData[1] = response
+      pageData[1] = response
       currentPage = response.current_page
       currentPage++
       lastPage = response.last_page
@@ -419,15 +474,18 @@ const hlAPI = {
     })
 
     for (let i = currentPage; i <= lastPage; i++) {
-      talentData[i] = _req('get', Endpoints.TALENTS() + '?page=' + i).catch((error) => {
+      pageData[i] = _req('get', Endpoints.TALENTS() + '?page=' + i).catch((error) => {
         throw Error('Talents on page ' + currentPage + '\n' + error)
       })
     }
 
-    for (let element in talentData) {
-      talentData[element] = await talentData[element]
-      info['talents'] = info['talents'].concat(talentData[element].data)
-    }
+    await Promise.all(mapObjectToArray(pageData)).then((promiseArray) => {
+      for (let i = 0; i < promiseArray.length; i += 2) {
+        info['talents'] = info['talents'].concat(promiseArray[i + 1].data)
+      }
+    }).catch((error) => {
+      throw error
+    })
 
     return info['talents']
   },
@@ -439,23 +497,27 @@ const hlAPI = {
       throw Error('Talent with ID ' + talentID + ' does not exist' + '\n' + error)
     })
 
-    for (let element in info) {
-      info[element] = await info[element]
-    }
+    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
+      for (let i = 0; i < promiseArray.length; i += 2) {
+        info[promiseArray[i]] = promiseArray[i + 1]
+      }
+    }).catch((error) => {
+      throw error
+    })
 
     return info['talent']
   },
 
   getTeams: async () => {
     let info = {}
-    let teamData = {}
+    let pageData = {}
     let currentPage
     let lastPage
 
     info['teams'] = []
 
     await _req('get', Endpoints.TEAMS()).then((response) => {
-      teamData[1] = response
+      pageData[1] = response
       currentPage = response.current_page
       currentPage++
       lastPage = response.last_page
@@ -464,15 +526,18 @@ const hlAPI = {
     })
 
     for (let i = currentPage; i <= lastPage; i++) {
-      teamData[i] = _req('get', Endpoints.TEAMS() + '?page=' + i).catch((error) => {
+      pageData[i] = _req('get', Endpoints.TEAMS() + '?page=' + i).catch((error) => {
         throw Error('Teams on page ' + currentPage + '\n' + error)
       })
     }
 
-    for (let element in teamData) {
-      teamData[element] = await teamData[element]
-      info['teams'] = info['teams'].concat(teamData[element].data)
-    }
+    await Promise.all(mapObjectToArray(pageData)).then((promiseArray) => {
+      for (let i = 0; i < promiseArray.length; i += 2) {
+        info['teams'] = info['teams'].concat(promiseArray[i + 1].data)
+      }
+    }).catch((error) => {
+      throw error
+    })
 
     return info['teams']
   },
@@ -490,9 +555,13 @@ const hlAPI = {
       throw Error('Sloths for team with ID ' + teamID + ' do not exist' + '\n' + error)
     })
 
-    for (let element in info) {
-      info[element] = await info[element]
-    }
+    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
+      for (let i = 0; i < promiseArray.length; i += 2) {
+        info[promiseArray[i]] = promiseArray[i + 1]
+      }
+    }).catch((error) => {
+      throw error
+    })
 
     return info
   },
@@ -500,16 +569,17 @@ const hlAPI = {
   getTeamMatches: async (teamID) => {
     if (!teamID) throw Error('Team ID is not defined')
     let info = {}
-    info['team'] = _req('get', Endpoints.TEAMS(teamID)).catch((error) => {
-      throw Error('Team with ID ' + teamID + ' does not exist' + '\n' + error)
-    })
     info['matches'] = _req('get', Endpoints.TEAM_MATCHES(teamID)).catch((error) => {
       throw Error('Matches for team with ID ' + teamID + ' do not exist' + '\n' + error)
     })
 
-    for (let element in info) {
-      info[element] = await info[element]
-    }
+    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
+      for (let i = 0; i < promiseArray.length; i += 2) {
+        info[promiseArray[i]] = promiseArray[i + 1]
+      }
+    }).catch((error) => {
+      throw error
+    })
 
     return info
   },
@@ -517,16 +587,17 @@ const hlAPI = {
   getTeamTimelineEntries: async (teamID) => {
     if (!teamID) throw Error('Team ID is not defined')
     let info = {}
-    info['team'] = _req('get', Endpoints.TEAMS(teamID)).catch((error) => {
-      throw Error('Team with ID ' + teamID + ' does not exist' + '\n' + error)
-    })
     info['entries'] = _req('get', Endpoints.TEAM_TIMELINE(teamID)).catch((error) => {
       throw Error('Timeline for team with ID ' + teamID + ' does not exist' + '\n' + error)
     })
 
-    for (let element in info) {
-      info[element] = await info[element]
-    }
+    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
+      for (let i = 0; i < promiseArray.length; i += 2) {
+        info[promiseArray[i]] = promiseArray[i + 1]
+      }
+    }).catch((error) => {
+      throw error
+    })
 
     return info
   }
@@ -569,12 +640,21 @@ let _req = (type, endpoint) => {
       })
     })
 
-    req.on('error', (err) => {
-      reject(Error('Error with request: \n' + err))
+    req.on('error', (error) => {
+      reject(error)
     })
 
     req.end()
   })
+}
+
+// Maps an object to an array.
+let mapObjectToArray = (object) => {
+  let objectArray = []
+  Object.keys(object).forEach((key) => {
+    objectArray.push(key, object[key])
+  })
+  return objectArray
 }
 
 /* Heroes Lounge Endpoints. */
