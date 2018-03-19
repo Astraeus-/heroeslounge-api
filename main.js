@@ -1,6 +1,9 @@
 
 const hlAPI = require('./index.js')
 
+// Start time of the data request.
+let start = Date.now()
+
 // hlAPI.getBanInfo(21).then((response) => {
 //   console.log(response)
 // }).catch((error) => {
@@ -79,39 +82,96 @@ const hlAPI = require('./index.js')
 //   console.log(error)
 // })
 
-// hlAPI.getTeams().then((response) => {
-//   response.forEach(async (team) => {
-//     if (team.slug === 'DOF') {
-//       await hlAPI.getTeamInfo(team.id).then((response) => {
-//         console.log('Team name: ' + response.team.title)
-//         console.log('Creation date: ' + response.team.created_at)
-//         console.log('Team descriptions: ' + response.team.short_description)
-//         console.log('Team active: ' + response.team.disbanded)
+// hlAPI.getTeams(113).then(async (teams) => {
+//   console.log(Math.ceil(teams.length / 20) + ' pages of team data')
+//   console.log(teams.length)
+//   let allTeamData = []
+//   let teamData = {}
 //
-//         console.log('Logo: ' + response.logo.path)
+//   for (let i = 0; i < teams.length - 1; i++) {
+//     teamData[i] = hlAPI.getTeamInfo(teams[i].id).catch((error) => {
+//       console.log(error)
+//     })
+//   }
 //
-//         response.sloths.forEach((sloth) => {
-//           console.log('Username: ' + sloth.title + ' Discord tag: ' + sloth.discord_tag)
-//         })
-//       }).catch((error) => {
-//         console.error(error)
-//       })
-//       await hlAPI.getTeamMatches(team.id).then((response) => {
-//         // console.log(response)
-//         hlAPI.getDivisionInfo(response.matches[response.matches.length - 1]).then((response) => {
-//           console.log(response)
-//         }).catch((error) => {
-//           console.error(error)
-//         })
-//       }).catch((error) => {
-//         console.error(error)
-//       })
+//   await Promise.all(mapObjectToArray(teamData)).then((promiseArray) => {
+//     for (let i = 0; i < promiseArray.length; i += 2) {
+//       allTeamData = allTeamData.concat(promiseArray[i + 1])
 //     }
+//   })
+//
+//   // All the data is retrieved at this point.
+//   console.log(Date.now() - start + ' ms to fetch all data')
+//   allTeamData.forEach((team) => {
+//     console.log('Team Name: ' + team.team.title)
+//     console.log('Creation Date: ' + team.team.created_at)
+//     let captain = team.sloths.find((sloth) => {
+//       return sloth.is_captain === '1'
+//     })
+//     if (captain) console.log('Captain: ' + captain.title)
+//     else console.log('Team disbanded')
 //   })
 // }).catch((error) => {
 //   console.error(error)
 // })
 
+// hlAPI.getTeams().then((response) => {
+//   console.log(Math.ceil(response.length / 20) + ' pages of team data')
+//   console.log(response.length + ' number of teams')
+//   console.log(Date.now() - start + ' ms to fetch all data')
+//   // console.log(response)
+// }).catch((error) => {
+//   console.log(error)
+// })
+
+// hlAPI.getTeamInfo(161).then((response) => {
+//   console.log(response)
+// }).catch((error) => {
+//   console.log(error)
+// })
+
+// hlAPI.getSeasonInfo(3).then((response) => {
+//   let teams = response.teams
+//   let nCaptains = 0
+//   let reqCount = 0
+//
+//   teams.forEach((team) => {
+//     reqCount++
+//     setTimeout(async () => {
+//       if (team.disbanded === '0') {
+//         await hlAPI.getTeamInfo(team.id).then((response) => {
+//           let sloths = response.sloths
+//           sloths.forEach((sloth) => {
+//             if (sloth.is_captain === '1') {
+//               nCaptains++
+//               // if (sloth.discord_tag.length < 1) console.log(sloth)
+//               console.log(sloth.discord_tag)
+//             }
+//           })
+//           if (team.id === teams[teams.length - 1].id) {
+//             console.log(nCaptains + ' Team captains of active teams')
+//           }
+//         }).catch((error) => {
+//           console.log(error)
+//         })
+//       } else {
+//         // console.log('INACTIVE TEAM: ' + team.title)
+//       }
+//     }, reqCount * 250)
+//   })
+// }).catch((error) => {
+//   console.log(error)
+// })
+
+// Maps an object to an array for await Promise.all
+let mapObjectToArray = (object) => {
+  let objectArray = []
+  Object.keys(object).forEach((key) => {
+    objectArray.push(key, object[key])
+  })
+  return objectArray
+}
+
 // Add specification how many results you'd want to get.
-// Add a proper test script for all of the functions.
 // Add some form of rate-limiting.
+// Add a proper test script for all of the functions.

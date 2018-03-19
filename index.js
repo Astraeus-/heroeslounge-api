@@ -8,36 +8,9 @@ const API = '/api/' + VERSION
 // Heroes Lounge API Methods.
 const hlAPI = {
 
-  getBans: async () => {
+  getBans: async (numberToRequest) => {
     let info = {}
-    let pageData = {}
-    let currentPage
-    let lastPage
-
-    info['bans'] = []
-
-    await _req('get', Endpoints.BANS()).then((response) => {
-      pageData[1] = response
-      currentPage = response.current_page
-      currentPage++
-      lastPage = response.last_page
-    }).catch((error) => {
-      throw Error('Bans initial page' + '\n' + error)
-    })
-
-    for (let i = currentPage; i <= lastPage; i++) {
-      pageData[i] = _req('get', Endpoints.BANS() + '?page=' + i).catch((error) => {
-        throw Error('Bans on page ' + currentPage + '\n' + error)
-      })
-    }
-
-    await Promise.all(mapObjectToArray(pageData)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
-        info['bans'] = info['bans'].concat(promiseArray[i + 1].data)
-      }
-    }).catch((error) => {
-      throw error
-    })
+    info['bans'] = await _reqMulti('get', Endpoints.BANS(), numberToRequest)
 
     for (let ban in info['bans']) {
       info['bans'][ban]['hero'] = info['bans'][ban].hero_id ? _req('get', Endpoints.HEROES(info['bans'][ban].hero_id)).catch((error) => {
@@ -85,42 +58,16 @@ const hlAPI = {
       throw error
     })
 
+    // Remove no longer needed information.
     delete info['ban'].hero_id
     delete info['ban'].talent_id
 
     return info
   },
 
-  getDivisions: async () => {
+  getDivisions: async (numberToRequest) => {
     let info = {}
-    let pageData = {}
-    let currentPage
-    let lastPage
-
-    info['divisions'] = []
-
-    await _req('get', Endpoints.DIVISIONS()).then((response) => {
-      pageData[1] = response
-      currentPage = response.current_page
-      currentPage++
-      lastPage = response.last_page
-    }).catch((error) => {
-      throw Error('Divisions initial page' + '\n' + error)
-    })
-
-    for (let i = currentPage; i <= lastPage; i++) {
-      pageData[i] = _req('get', Endpoints.DIVISIONS() + '?page=' + i).catch((error) => {
-        throw Error('Divisions on page ' + currentPage + '\n' + error)
-      })
-    }
-
-    await Promise.all(mapObjectToArray(pageData)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
-        info['divisions'] = info['divisions'].concat(promiseArray[i + 1].data)
-      }
-    }).catch((error) => {
-      throw error
-    })
+    info['divisions'] = _reqMulti('get', Endpoints.DIVISIONS(), numberToRequest)
 
     return info['divisions']
   },
@@ -146,36 +93,9 @@ const hlAPI = {
     return info
   },
 
-  getHeroes: async () => {
+  getHeroes: async (numberToRequest) => {
     let info = {}
-    let pageData = {}
-    let currentPage
-    let lastPage
-
-    info['heroes'] = []
-
-    await _req('get', Endpoints.HEROES()).then((response) => {
-      pageData[1] = response
-      currentPage = response.current_page
-      currentPage++
-      lastPage = response.last_page
-    }).catch((error) => {
-      throw Error('Heroes initial page' + '\n' + error)
-    })
-
-    for (let i = currentPage; i <= lastPage; i++) {
-      pageData[i] = _req('get', Endpoints.HEROES() + '?page=' + i).catch((error) => {
-        throw Error('Heroes on page ' + currentPage + '\n' + error)
-      })
-    }
-
-    await Promise.all(mapObjectToArray(pageData)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
-        info['heroes'] = info['heroes'].concat(promiseArray[i + 1].data)
-      }
-    }).catch((error) => {
-      throw error
-    })
+    info['heroes'] = _reqMulti('get', Endpoints.HEROES(), numberToRequest)
 
     return info['heroes']
   },
@@ -198,36 +118,9 @@ const hlAPI = {
     return info['hero']
   },
 
-  getMatches: async () => {
+  getMatches: async (numberToRequest) => {
     let info = {}
-    let pageData = {}
-    let currentPage
-    let lastPage
-
-    info['matches'] = []
-
-    await _req('get', Endpoints.MATCHES()).then((response) => {
-      pageData[1] = response
-      currentPage = response.current_page
-      currentPage++
-      lastPage = response.last_page
-    }).catch((error) => {
-      throw Error('Matches initial page' + '\n' + error)
-    })
-
-    for (let i = currentPage; i <= lastPage; i++) {
-      pageData[i] = _req('get', Endpoints.MATCHES() + '?page=' + i).catch((error) => {
-        throw Error('Matches on page ' + currentPage + '\n' + error)
-      })
-    }
-
-    await Promise.all(mapObjectToArray(pageData)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
-        info['matches'] = info['matches'].concat(promiseArray[i + 1].data)
-      }
-    }).catch((error) => {
-      throw error
-    })
+    info['matches'] = _reqMulti('get', Endpoints.MATCHES(), numberToRequest)
 
     return info['matches']
   },
@@ -298,36 +191,9 @@ const hlAPI = {
     return info
   },
 
-  getPlayoffs: async () => {
+  getPlayoffs: async (numberToRequest) => {
     let info = {}
-    let pageData = {}
-    let currentPage
-    let lastPage
-
-    info['playoffs'] = []
-
-    await _req('get', Endpoints.PLAYOFFS()).then((response) => {
-      pageData[1] = response
-      currentPage = response.current_page
-      currentPage++
-      lastPage = response.last_page
-    }).catch((error) => {
-      throw Error('Playoffs initial page' + '\n' + error)
-    })
-
-    for (let i = currentPage; i <= lastPage; i++) {
-      pageData[i] = _req('get', Endpoints.PLAYOFFS() + '?page=' + i).catch((error) => {
-        throw Error('Playoffs on page ' + currentPage + '\n' + error)
-      })
-    }
-
-    await Promise.all(mapObjectToArray(pageData)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
-        info['playoffs'] = info['playoffs'].concat(promiseArray[i + 1].data)
-      }
-    }).catch((error) => {
-      throw error
-    })
+    info['playoffs'] = _reqMulti('get', Endpoints.PLAYOFFS(), numberToRequest)
 
     return info['playoffs']
   },
@@ -374,36 +240,9 @@ const hlAPI = {
     return info['statistics']
   },
 
-  getSeasons: async () => {
+  getSeasons: async (numberToRequest) => {
     let info = {}
-    let pageData = {}
-    let currentPage
-    let lastPage
-
-    info['seasons'] = []
-
-    await _req('get', Endpoints.SEASONS()).then((response) => {
-      pageData[1] = response
-      currentPage = response.current_page
-      currentPage++
-      lastPage = response.last_page
-    }).catch((error) => {
-      throw Error('Seasons initial page' + '\n' + error)
-    })
-
-    for (let i = currentPage; i <= lastPage; i++) {
-      pageData[i] = _req('get', Endpoints.SEASONS() + '?page=' + i).catch((error) => {
-        throw Error('Playoffs on page ' + currentPage + '\n' + error)
-      })
-    }
-
-    await Promise.all(mapObjectToArray(pageData)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
-        info['seasons'] = info['seasons'].concat(promiseArray[i + 1].data)
-      }
-    }).catch((error) => {
-      throw error
-    })
+    info['seasons'] = _reqMulti('get', Endpoints.SEASONS(), numberToRequest)
 
     return info['seasons']
   },
@@ -412,6 +251,9 @@ const hlAPI = {
     if (!seasonID) throw Error('Season ID is not defined')
     let info = {}
     info['season'] = _req('get', Endpoints.SEASONS(seasonID)).catch((error) => {
+      throw Error('Season with ID ' + seasonID + ' does not exist' + '\n' + error)
+    })
+    info['teams'] = _req('get', Endpoints.SEASON_TEAMS(seasonID)).catch((error) => {
       throw Error('Season with ID ' + seasonID + ' does not exist' + '\n' + error)
     })
     info['divisions'] = _req('get', Endpoints.SEASON_DIVISIONS(seasonID)).catch((error) => {
@@ -432,36 +274,9 @@ const hlAPI = {
     return info
   },
 
-  getSloths: async () => {
+  getSloths: async (numberToRequest) => {
     let info = {}
-    let pageData = {}
-    let currentPage
-    let lastPage
-
-    info['sloths'] = []
-
-    await _req('get', Endpoints.SLOTHS()).then((response) => {
-      pageData[1] = response
-      currentPage = response.current_page
-      currentPage++
-      lastPage = response.last_page
-    }).catch((error) => {
-      throw Error('Sloths initial page' + '\n' + error)
-    })
-
-    for (let i = currentPage; i <= lastPage; i++) {
-      pageData[i] = _req('get', Endpoints.SLOTHS() + '?page=' + i).catch((error) => {
-        throw Error('Sloths on page ' + currentPage + '\n' + error)
-      })
-    }
-
-    await Promise.all(mapObjectToArray(pageData)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
-        info['sloths'] = info['sloths'].concat(promiseArray[i + 1].data)
-      }
-    }).catch((error) => {
-      throw error
-    })
+    info['sloths'] = _reqMulti('get', Endpoints.SLOTHS(), numberToRequest)
 
     return info['sloths']
   },
@@ -484,36 +299,9 @@ const hlAPI = {
     return info['sloth']
   },
 
-  getTalents: async () => {
+  getTalents: async (numberToRequest) => {
     let info = {}
-    let pageData = {}
-    let currentPage
-    let lastPage
-
-    info['talents'] = []
-
-    await _req('get', Endpoints.TALENTS()).then((response) => {
-      pageData[1] = response
-      currentPage = response.current_page
-      currentPage++
-      lastPage = response.last_page
-    }).catch((error) => {
-      throw Error('Talents initial page' + '\n' + error)
-    })
-
-    for (let i = currentPage; i <= lastPage; i++) {
-      pageData[i] = _req('get', Endpoints.TALENTS() + '?page=' + i).catch((error) => {
-        throw Error('Talents on page ' + currentPage + '\n' + error)
-      })
-    }
-
-    await Promise.all(mapObjectToArray(pageData)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
-        info['talents'] = info['talents'].concat(promiseArray[i + 1].data)
-      }
-    }).catch((error) => {
-      throw error
-    })
+    info['talents'] = _reqMulti('get', Endpoints.TALENTS(), numberToRequest)
 
     return info['talents']
   },
@@ -536,36 +324,9 @@ const hlAPI = {
     return info['talent']
   },
 
-  getTeams: async () => {
+  getTeams: async (numberToRequest) => {
     let info = {}
-    let pageData = {}
-    let currentPage
-    let lastPage
-
-    info['teams'] = []
-
-    await _req('get', Endpoints.TEAMS()).then((response) => {
-      pageData[1] = response
-      currentPage = response.current_page
-      currentPage++
-      lastPage = response.last_page
-    }).catch((error) => {
-      throw Error('Teams initial page' + '\n' + error)
-    })
-
-    for (let i = currentPage; i <= lastPage; i++) {
-      pageData[i] = _req('get', Endpoints.TEAMS() + '?page=' + i).catch((error) => {
-        throw Error('Teams on page ' + currentPage + '\n' + error)
-      })
-    }
-
-    await Promise.all(mapObjectToArray(pageData)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
-        info['teams'] = info['teams'].concat(promiseArray[i + 1].data)
-      }
-    }).catch((error) => {
-      throw error
-    })
+    info['teams'] = _reqMulti('get', Endpoints.TEAMS(), numberToRequest)
 
     return info['teams']
   },
@@ -577,7 +338,12 @@ const hlAPI = {
       throw Error('Team with ID ' + teamID + ' does not exist' + '\n' + error)
     })
     info['logo'] = _req('get', Endpoints.TEAM_LOGO(teamID)).catch((error) => {
-      throw Error('Logo for team with ID ' + teamID + ' does not exist' + '\n' + error)
+      if (error.message === 'Parse JSON response') {
+        console.log('Team with ID ' + teamID + ' does not have a custom logo')
+        info['logo'] = {}
+      } else {
+        throw Error('Logo for team with ID ' + teamID + ' does not exist' + '\n' + error)
+      }
     })
     info['sloths'] = _req('get', Endpoints.TEAM_SLOTHS(teamID)).catch((error) => {
       throw Error('Sloths for team with ID ' + teamID + ' do not exist' + '\n' + error)
@@ -632,8 +398,56 @@ const hlAPI = {
 
 }
 
-// Makes a request to the Heroes Lounge API.
+/*
+
+Rate-Limit tracking
+
+*/
+
+let rateLimitInterval = 100
+let lastRequestTime = Date.now() - rateLimitInterval // Initialize to allow instant request at start up.
+
+let requestQueue = []
+
+// prototype multi-request
+let _reqMulti = async (type, endpoint, limit) => {
+  let returnData = []
+  let pageData = {}
+  let pageDataSize
+  let currentPage
+
+  let nPagesToRequest
+
+  await _req(type, endpoint).then((response) => {
+    pageData[1] = response.data
+    pageDataSize = response.per_page
+    currentPage = response.current_page
+    nPagesToRequest = limit ? Math.min(Math.max(Math.ceil(limit / pageDataSize), 1), response.last_page) : response.last_page
+  })
+
+  for (let i = currentPage; i <= nPagesToRequest; i++) {
+    pageData[i] = _req('get', endpoint + '?page=' + i).catch((error) => {
+      throw error
+    })
+  }
+
+  await Promise.all(mapObjectToArray(pageData)).then((promiseArray) => {
+    for (let i = 0; i < promiseArray.length; i += 2) {
+      returnData = returnData.concat(promiseArray[i + 1].data)
+    }
+  }).catch((error) => {
+    throw error
+  })
+
+  if (returnData.length > limit) returnData = returnData.slice(0, limit)
+
+  return returnData
+}
+
 let _req = (type, endpoint) => {
+  let timeSinceLastRequest = Date.now() - lastRequestTime
+  lastRequestTime = Date.now()
+
   return new Promise((resolve, reject) => {
     const options = {
       hostname: baseURL,
@@ -644,35 +458,71 @@ let _req = (type, endpoint) => {
       }
     }
 
-    const req = _HTTPS.request(options, (res) => {
-      let rawResponse = ''
-      res.setEncoding('utf8')
+    if (timeSinceLastRequest >= rateLimitInterval) {
+      const req = _HTTPS.request(options, (res) => {
+        let rawResponse = ''
+        res.setEncoding('utf8')
 
-      res.on('data', (d) => {
-        rawResponse += d
-      })
+        res.on('data', (d) => {
+          rawResponse += d
+        })
 
-      res.on('end', () => {
-        try {
-          let response = JSON.parse(rawResponse)
-          if (res.statusCode === 200) {
-            resolve(response)
-          } else if (res.statusCode === 400) {
-            reject(Error('Status Code ' + res.statusCode + ': Value does not exist'))
-          } else {
-            reject(Error('Status Code ' + res.statusCode + ': Invalid request'))
+        res.on('end', () => {
+          try {
+            let response = JSON.parse(rawResponse)
+            if (res.statusCode === 200) {
+              resolve(response)
+            } else if (res.statusCode === 400) {
+              reject(Error('Status Code ' + res.statusCode + ': Value does not exist'))
+            } else {
+              reject(Error('Status Code ' + res.statusCode + ': Invalid request'))
+            }
+          } catch (err) {
+            reject(Error('Parse JSON response'))
           }
-        } catch (err) {
-          reject(Error('Could not parse JSON response'))
-        }
+        })
       })
-    })
 
-    req.on('error', (error) => {
-      reject(error)
-    })
+      req.on('error', (error) => {
+        reject(error)
+      })
 
-    req.end()
+      req.end()
+    } else {
+      requestQueue.push({'type': type, 'endpoint': endpoint})
+      let nextRequest = requestQueue.length === 0 ? rateLimitInterval - timeSinceLastRequest : (requestQueue.length - 1) * rateLimitInterval + rateLimitInterval
+      setTimeout(() => {
+        const req = _HTTPS.request(options, (res) => {
+          let rawResponse = ''
+          res.setEncoding('utf8')
+
+          res.on('data', (d) => {
+            rawResponse += d
+          })
+
+          res.on('end', () => {
+            try {
+              let response = JSON.parse(rawResponse)
+              if (res.statusCode === 200) {
+                resolve(response)
+              } else if (res.statusCode === 400) {
+                reject(Error('Status Code ' + res.statusCode + ': Value does not exist'))
+              } else {
+                reject(Error('Status Code ' + res.statusCode + ': Invalid request'))
+              }
+            } catch (err) {
+              reject(Error('Parse JSON response'))
+            }
+          })
+        })
+
+        req.on('error', (error) => {
+          reject(error)
+        })
+
+        req.end()
+      }, nextRequest)
+    }
   })
 }
 
