@@ -4,7 +4,7 @@ const hlAPI = require('./index.js')
 // Start time of the data request.
 let start = Date.now()
 
-// hlAPI.getBanInfo(21).then((response) => {
+// hlAPI.getBanInfo(-1).then((response) => {
 //   console.log(response)
 // }).catch((error) => {
 //   console.log(error)
@@ -38,7 +38,7 @@ let start = Date.now()
 //   console.log(error)
 // })
 //
-// hlAPI.getMatchInfo(1).then((response) => {
+// hlAPI.getMatchInfo(1474).then((response) => {
 //   console.log(response)
 // }).catch((error) => {
 //   console.log(error)
@@ -82,7 +82,7 @@ let start = Date.now()
 //   console.log(error)
 // })
 
-// hlAPI.getTeams(113).then(async (teams) => {
+// hlAPI.getTeams(50).then(async (teams) => {
 //   console.log(Math.ceil(teams.length / 20) + ' pages of team data')
 //   console.log(teams.length)
 //   let allTeamData = []
@@ -103,8 +103,8 @@ let start = Date.now()
 //   // All the data is retrieved at this point.
 //   console.log(Date.now() - start + ' ms to fetch all data')
 //   allTeamData.forEach((team) => {
-//     console.log('Team Name: ' + team.team.title)
-//     console.log('Creation Date: ' + team.team.created_at)
+//     console.log('Team Name: ' + team.title)
+//     console.log('Creation Date: ' + team.created_at)
 //     let captain = team.sloths.find((sloth) => {
 //       return sloth.is_captain === '1'
 //     })
@@ -123,8 +123,8 @@ let start = Date.now()
 // }).catch((error) => {
 //   console.log(error)
 // })
-
-// hlAPI.getTeamInfo(161).then((response) => {
+// Complete: 2, Missing sloths: 4, Missing logo: 161
+// hlAPI.getTeamInfo(2).then((response) => {
 //   console.log(response)
 // }).catch((error) => {
 //   console.log(error)
@@ -172,6 +172,5 @@ let mapObjectToArray = (object) => {
   return objectArray
 }
 
-// Add specification how many results you'd want to get.
-// Add some form of rate-limiting.
+// Try to combine _req and _reqMulti.
 // Add a proper test script for all of the functions.

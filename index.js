@@ -43,26 +43,27 @@ const hlAPI = {
       throw Error('Ban with ID ' + banID + ' does not exist' + '\n' + error)
     })
 
-    info['ban']['hero'] = info['ban'].hero_id ? _req('get', Endpoints.HEROES(info['ban'].hero_id)).catch((error) => {
+    info['hero'] = info['ban'].hero_id ? _req('get', Endpoints.HEROES(info['ban'].hero_id)).catch((error) => {
       throw Error('Hero with ID ' + info['ban'].hero_id + ' does not exist' + '\n' + error)
     }) : null
-    info['ban']['talent'] = info['ban'].talent_id ? _req('get', Endpoints.TALENTS(info['ban'].talent_id)).catch((error) => {
+    info['talent'] = info['ban'].talent_id ? _req('get', Endpoints.TALENTS(info['ban'].talent_id)).catch((error) => {
       throw Error('Talent with ID ' + info['ban'].talent_id + ' does not exist' + '\n' + error)
     }) : null
 
-    await Promise.all(mapObjectToArray(info['ban'])).then((promiseArray) => {
+    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
       for (let i = 0; i < promiseArray.length; i += 2) {
-        info['ban'][promiseArray[i]] = promiseArray[i + 1]
+        if (typeof promiseArray[i + 1] === 'object') {
+          if (promiseArray[i] === 'ban') continue
+          info['ban'][promiseArray[i]] = promiseArray[i + 1]
+          delete info[promiseArray[i]]
+        }
+        info[promiseArray[i]] = promiseArray[i + 1]
       }
     }).catch((error) => {
       throw error
     })
 
-    // Remove no longer needed information.
-    delete info['ban'].hero_id
-    delete info['ban'].talent_id
-
-    return info
+    return info['ban']
   },
 
   getDivisions: async (numberToRequest) => {
@@ -164,6 +165,7 @@ const hlAPI = {
     info['match'] = await _req('get', Endpoints.MATCHES(matchID)).catch((error) => {
       throw Error('Match with ID ' + matchID + ' does not exist' + '\n' + error)
     })
+
     info['teams'] = _req('get', Endpoints.MATCH_TEAMS(matchID)).catch((error) => {
       throw Error('Teams for match with ID ' + matchID + ' do not exist' + '\n' + error)
     })
@@ -182,13 +184,18 @@ const hlAPI = {
 
     await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
       for (let i = 0; i < promiseArray.length; i += 2) {
+        if (typeof promiseArray[i + 1] === 'object') {
+          if (promiseArray[i] === 'match') continue
+          info['match'][promiseArray[i]] = promiseArray[i + 1]
+          delete info[promiseArray[i]]
+        }
         info[promiseArray[i]] = promiseArray[i + 1]
       }
     }).catch((error) => {
       throw error
     })
 
-    return info
+    return info['match']
   },
 
   getPlayoffs: async (numberToRequest) => {
@@ -213,13 +220,18 @@ const hlAPI = {
 
     await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
       for (let i = 0; i < promiseArray.length; i += 2) {
+        if (typeof promiseArray[i + 1] === 'object') {
+          if (promiseArray[i] === 'playoff') continue
+          info['playoff'][promiseArray[i]] = promiseArray[i + 1]
+          delete info[promiseArray[i]]
+        }
         info[promiseArray[i]] = promiseArray[i + 1]
       }
     }).catch((error) => {
       throw error
     })
 
-    return info
+    return info['playoff']
   },
 
   getSeasonCasterStatistics: async (seasonID) => {
@@ -265,13 +277,18 @@ const hlAPI = {
 
     await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
       for (let i = 0; i < promiseArray.length; i += 2) {
+        if (typeof promiseArray[i + 1] === 'object') {
+          if (promiseArray[i] === 'season') continue
+          info['season'][promiseArray[i]] = promiseArray[i + 1]
+          delete info[promiseArray[i]]
+        }
         info[promiseArray[i]] = promiseArray[i + 1]
       }
     }).catch((error) => {
       throw error
     })
 
-    return info
+    return info['season']
   },
 
   getSloths: async (numberToRequest) => {
@@ -337,6 +354,7 @@ const hlAPI = {
     info['team'] = _req('get', Endpoints.TEAMS(teamID)).catch((error) => {
       throw Error('Team with ID ' + teamID + ' does not exist' + '\n' + error)
     })
+
     info['logo'] = _req('get', Endpoints.TEAM_LOGO(teamID)).catch((error) => {
       if (error.message === 'Parse JSON response') {
         console.log('Team with ID ' + teamID + ' does not have a custom logo')
@@ -351,13 +369,18 @@ const hlAPI = {
 
     await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
       for (let i = 0; i < promiseArray.length; i += 2) {
+        if (typeof promiseArray[i + 1] === 'object') {
+          if (promiseArray[i] === 'ban') continue
+          info['team'][promiseArray[i]] = promiseArray[i + 1]
+          delete info[promiseArray[i]]
+        }
         info[promiseArray[i]] = promiseArray[i + 1]
       }
     }).catch((error) => {
       throw error
     })
 
-    return info
+    return info['team']
   },
 
   getTeamMatches: async (teamID) => {
@@ -375,7 +398,7 @@ const hlAPI = {
       throw error
     })
 
-    return info
+    return info['matches']
   },
 
   getTeamTimelineEntries: async (teamID) => {
@@ -393,7 +416,7 @@ const hlAPI = {
       throw error
     })
 
-    return info
+    return info['entries']
   }
 
 }
@@ -406,11 +429,11 @@ Rate-Limit tracking
 
 let rateLimitInterval = 100
 let lastRequestTime = Date.now() - rateLimitInterval // Initialize to allow instant request at start up.
-
 let requestQueue = []
 
 // prototype multi-request
 let _reqMulti = async (type, endpoint, limit) => {
+  if (typeof limit !== 'undefined' && typeof limit !== 'number') throw Error('numberToRequest is not of type number')
   let returnData = []
   let pageData = {}
   let pageDataSize
@@ -418,11 +441,14 @@ let _reqMulti = async (type, endpoint, limit) => {
 
   let nPagesToRequest
 
+  // Initial request.
   await _req(type, endpoint).then((response) => {
     pageData[1] = response.data
     pageDataSize = response.per_page
     currentPage = response.current_page
     nPagesToRequest = limit ? Math.min(Math.max(Math.ceil(limit / pageDataSize), 1), response.last_page) : response.last_page
+  }).catch((error) => {
+    throw error
   })
 
   for (let i = currentPage; i <= nPagesToRequest; i++) {
@@ -459,70 +485,56 @@ let _req = (type, endpoint) => {
     }
 
     if (timeSinceLastRequest >= rateLimitInterval) {
-      const req = _HTTPS.request(options, (res) => {
-        let rawResponse = ''
-        res.setEncoding('utf8')
-
-        res.on('data', (d) => {
-          rawResponse += d
-        })
-
-        res.on('end', () => {
-          try {
-            let response = JSON.parse(rawResponse)
-            if (res.statusCode === 200) {
-              resolve(response)
-            } else if (res.statusCode === 400) {
-              reject(Error('Status Code ' + res.statusCode + ': Value does not exist'))
-            } else {
-              reject(Error('Status Code ' + res.statusCode + ': Invalid request'))
-            }
-          } catch (err) {
-            reject(Error('Parse JSON response'))
-          }
-        })
-      })
-
-      req.on('error', (error) => {
+      makeRequest(options).then((response) => {
+        resolve(response)
+      }).catch((error) => {
         reject(error)
       })
-
-      req.end()
     } else {
       requestQueue.push({'type': type, 'endpoint': endpoint})
       let nextRequest = requestQueue.length === 0 ? rateLimitInterval - timeSinceLastRequest : (requestQueue.length - 1) * rateLimitInterval + rateLimitInterval
       setTimeout(() => {
-        const req = _HTTPS.request(options, (res) => {
-          let rawResponse = ''
-          res.setEncoding('utf8')
-
-          res.on('data', (d) => {
-            rawResponse += d
-          })
-
-          res.on('end', () => {
-            try {
-              let response = JSON.parse(rawResponse)
-              if (res.statusCode === 200) {
-                resolve(response)
-              } else if (res.statusCode === 400) {
-                reject(Error('Status Code ' + res.statusCode + ': Value does not exist'))
-              } else {
-                reject(Error('Status Code ' + res.statusCode + ': Invalid request'))
-              }
-            } catch (err) {
-              reject(Error('Parse JSON response'))
-            }
-          })
-        })
-
-        req.on('error', (error) => {
+        makeRequest(options).then((response) => {
+          resolve(response)
+        }).catch((error) => {
           reject(error)
         })
-
-        req.end()
       }, nextRequest)
     }
+  })
+}
+
+let makeRequest = (options) => {
+  return new Promise((resolve, reject) => {
+    const req = _HTTPS.request(options, (res) => {
+      let rawResponse = ''
+      res.setEncoding('utf8')
+
+      res.on('data', (d) => {
+        rawResponse += d
+      })
+
+      res.on('end', () => {
+        try {
+          let response = JSON.parse(rawResponse)
+          if (res.statusCode === 200) {
+            resolve(response)
+          } else if (res.statusCode === 400) {
+            reject(Error('Status Code ' + res.statusCode + ': Value does not exist'))
+          } else {
+            reject(Error('Status Code ' + res.statusCode + ': Invalid request'))
+          }
+        } catch (err) {
+          reject(Error('Parse JSON response'))
+        }
+      })
+    })
+
+    req.on('error', (error) => {
+      reject(error)
+    })
+
+    req.end()
   })
 }
 
