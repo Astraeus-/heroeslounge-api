@@ -10,14 +10,16 @@ const hlAPI = {
 
   getBans: async (numberToRequest) => {
     let info = {}
-    info['bans'] = await _reqMulti('get', Endpoints.BANS(), numberToRequest)
+    info['bans'] = await _reqMulti('get', Endpoints.BANS(), numberToRequest).catch((error) => {
+      throw error
+    })
 
     for (let ban in info['bans']) {
       info['bans'][ban]['hero'] = info['bans'][ban].hero_id ? _req('get', Endpoints.HEROES(info['bans'][ban].hero_id)).catch((error) => {
-        throw Error('Hero with ID ' + info['bans'][ban].hero_id + ' does not exist' + '\n' + error)
+        throw Error(`Hero with ID ${info['bans'][ban].hero_id} does not exist \n${error}`)
       }) : null
       info['bans'][ban]['talent'] = info['bans'][ban].talent_id ? _req('get', Endpoints.TALENTS(info['bans'][ban].talent_id)).catch((error) => {
-        throw Error('Talent with ID ' + info['bans'][ban].talent_id + ' does not exist' + '\n' + error)
+        throw Error(`Talent with ID ${info['bans'][ban].talent_id} does not exist \n${error}`)
       }) : null
 
       await Promise.all(mapObjectToArray(info['bans'][ban])).then((promiseArray) => {
@@ -40,14 +42,14 @@ const hlAPI = {
     if (!banID) throw Error('Ban ID is not defined')
     let info = {}
     info['ban'] = await _req('get', Endpoints.BANS(banID)).catch((error) => {
-      throw Error('Ban with ID ' + banID + ' does not exist' + '\n' + error)
+      throw Error(`Ban with ID ${banID} does not exist \n${error}`)
     })
 
     info['hero'] = info['ban'].hero_id ? _req('get', Endpoints.HEROES(info['ban'].hero_id)).catch((error) => {
-      throw Error('Hero with ID ' + info['ban'].hero_id + ' does not exist' + '\n' + error)
+      throw Error(`Hero with ID ${info['ban'].hero_id} does not exist \n${error}`)
     }) : null
     info['talent'] = info['ban'].talent_id ? _req('get', Endpoints.TALENTS(info['ban'].talent_id)).catch((error) => {
-      throw Error('Talent with ID ' + info['ban'].talent_id + ' does not exist' + '\n' + error)
+      throw Error(`Talent with ID + ${info['ban'].talent_id} does not exist \n${error}`)
     }) : null
 
     await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
@@ -68,7 +70,9 @@ const hlAPI = {
 
   getDivisions: async (numberToRequest) => {
     let info = {}
-    info['divisions'] = _reqMulti('get', Endpoints.DIVISIONS(), numberToRequest)
+    info['divisions'] = _reqMulti('get', Endpoints.DIVISIONS(), numberToRequest).catch((error) => {
+      throw error
+    })
 
     return info['divisions']
   },
@@ -77,10 +81,10 @@ const hlAPI = {
     if (!divisionID) throw Error('Division ID is not defined')
     let info = {}
     info['division'] = _req('get', Endpoints.DIVISIONS(divisionID)).catch((error) => {
-      throw Error('Division with ID ' + divisionID + ' does not exist' + '\n' + error)
+      throw Error(`Division with ID ${divisionID} does not exist \n${error}`)
     })
     info['teams'] = _req('get', Endpoints.DIVISION_TEAMS(divisionID)).catch((error) => {
-      throw Error('Teams for division with ID ' + divisionID + ' do not exist' + '\n' + error)
+      throw Error(`Team for division with ID ${divisionID} do not exist \n${error}`)
     })
 
     await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
@@ -94,9 +98,38 @@ const hlAPI = {
     return info
   },
 
+  getGames: async (numberToRequest) => {
+    let info = {}
+    info['games'] = _reqMulti('get', Endpoints.GAMES(), numberToRequest).catch((error) => {
+      throw error
+    })
+
+    return info['games']
+  },
+
+  getGameInfo: async (gameID) => {
+    if (!gameID) throw Error('Game ID is not defined')
+    let info = {}
+    info['game'] = _req('get', Endpoints.GAMES(gameID)).catch((error) => {
+      throw Error(`Game with ID ${gameID} does not exist \n${error}`)
+    })
+
+    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
+      for (let i = 0; i < promiseArray.length; i += 2) {
+        info[promiseArray[i]] = promiseArray[i + 1]
+      }
+    }).catch((error) => {
+      throw error
+    })
+
+    return info['game']
+  },
+
   getHeroes: async (numberToRequest) => {
     let info = {}
-    info['heroes'] = _reqMulti('get', Endpoints.HEROES(), numberToRequest)
+    info['heroes'] = _reqMulti('get', Endpoints.HEROES(), numberToRequest).catch((error) => {
+      throw error
+    })
 
     return info['heroes']
   },
@@ -105,7 +138,7 @@ const hlAPI = {
     if (!heroID) throw Error('Hero ID is not defined')
     let info = {}
     info['hero'] = _req('get', Endpoints.HEROES(heroID)).catch((error) => {
-      throw Error('Hero with ID ' + heroID + ' does not exist' + '\n' + error)
+      throw Error(`Hero with ID ${heroID} does not exist \n${error}`)
     })
 
     await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
@@ -121,7 +154,9 @@ const hlAPI = {
 
   getMatches: async (numberToRequest) => {
     let info = {}
-    info['matches'] = _reqMulti('get', Endpoints.MATCHES(), numberToRequest)
+    info['matches'] = _reqMulti('get', Endpoints.MATCHES(), numberToRequest).catch((error) => {
+      throw error
+    })
 
     return info['matches']
   },
@@ -129,18 +164,18 @@ const hlAPI = {
   getMatchesToday: async () => {
     let info = {}
     info['matches'] = await _req('get', Endpoints.MATCHES_TODAY()).catch((error) => {
-      throw Error('Error getting today\'s matches ' + '\n' + error)
+      throw Error(`Could not get today's matches \n${error}`)
     })
 
     for (let match in info['matches']) {
       info['matches'][match]['teams'] = info['matches'][match].id ? _req('get', Endpoints.MATCH_TEAMS(info['matches'][match].id)).catch((error) => {
-        throw Error('Teams for match with ID ' + info['matches'][match].id + ' do not exist' + '\n' + error)
+        throw Error(`Teams for match with ID ${info['matches'][match].id} do not exist \n${error}`)
       }) : null
       info['matches'][match]['twitch'] = info['matches'][match].channel_id ? _req('get', Endpoints.TWITCH_CHANNELS(info['matches'][match].channel_id)).catch((error) => {
-        throw Error('Twitch channel for match with ID ' + info['matches'][match].id + ' does not exist' + '\n' + error)
+        throw Error(`Twitch channel for match with ID ${info['matches'][match].id} does not exist \n${error}`)
       }) : null
       info['matches'][match]['casters'] = info['matches'][match].channel_id ? _req('get', Endpoints.MATCH_CASTERS(info['matches'][match].id)).catch((error) => {
-        throw Error('Casters for match with ID ' + info['matches'][match].id + ' do not exist' + '\n' + error)
+        throw Error(`Casters for match with ID ${info['matches'][match].id} do not exist \n${error}`)
       }) : null
 
       await Promise.all(mapObjectToArray(info['matches'][match])).then((promiseArray) => {
@@ -163,23 +198,23 @@ const hlAPI = {
     if (!matchID) throw Error('Match ID is not defined')
     let info = {}
     info['match'] = await _req('get', Endpoints.MATCHES(matchID)).catch((error) => {
-      throw Error('Match with ID ' + matchID + ' does not exist' + '\n' + error)
+      throw Error(`Match with ID ${matchID} does not exist \n${error}`)
     })
 
     info['teams'] = _req('get', Endpoints.MATCH_TEAMS(matchID)).catch((error) => {
-      throw Error('Teams for match with ID ' + matchID + ' do not exist' + '\n' + error)
+      throw Error(`Teams for match with ID ${matchID} do not exist \n${error}`)
     })
     info['twitch'] = info['match'].channel_id ? _req('get', Endpoints.TWITCH_CHANNELS(info['match'].channel_id)).catch((error) => {
-      throw Error('Twitch channel for match with ID ' + matchID + ' does not exist' + '\n' + error)
+      throw Error(`Twtich channel for match with ID ${matchID} does not exist \n${error}`)
     }) : null
     info['casters'] = info['match'].channel_id ? _req('get', Endpoints.MATCH_CASTERS(matchID)).catch((error) => {
-      throw Error('Casters for match with ID ' + matchID + ' do not exist' + '\n' + error)
+      throw Error(`Casters for match with ID ${matchID} do not exist \n${error}`)
     }) : null
     info['games'] = _req('get', Endpoints.MATCH_GAMES(matchID)).catch((error) => {
-      throw Error('Games for match with ID ' + matchID + ' do not exist' + '\n' + error)
+      throw Error(`Games for match with ID ${matchID} do not exist \n${error}`)
     })
     info['replays'] = _req('get', Endpoints.MATCH_REPLAYS(matchID)).catch((error) => {
-      throw Error('Replays for match with ID ' + matchID + ' do not exist' + '\n' + error)
+      throw Error(`Replays for match with ID ${matchID} do not exist \n${error}`)
     })
 
     await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
@@ -200,7 +235,9 @@ const hlAPI = {
 
   getPlayoffs: async (numberToRequest) => {
     let info = {}
-    info['playoffs'] = _reqMulti('get', Endpoints.PLAYOFFS(), numberToRequest)
+    info['playoffs'] = _reqMulti('get', Endpoints.PLAYOFFS(), numberToRequest).catch((error) => {
+      throw error
+    })
 
     return info['playoffs']
   },
@@ -209,13 +246,13 @@ const hlAPI = {
     if (!playoffID) throw Error('Playoff ID is not defined')
     let info = {}
     info['playoff'] = _req('get', Endpoints.PLAYOFFS(playoffID)).catch((error) => {
-      throw Error('Playoff with ID ' + playoffID + ' does not exist' + '\n' + error)
+      throw Error(`Playoff with ID ${playoffID} does not exist \n${error}`)
     })
     info['divisions'] = _req('get', Endpoints.PLAYOFF_DIVISIONS(playoffID)).catch((error) => {
-      throw Error('Divisions for playoff with ID ' + playoffID + ' do not exist' + '\n' + error)
+      throw Error(`Divisions for playoff with ID ${playoffID} do not exist \n${error}`)
     })
     info['matches'] = _req('get', Endpoints.PLAYOFF_MATCHES(playoffID)).catch((error) => {
-      throw Error('Matches for playoff with ID ' + playoffID + ' do not exist' + '\n' + error)
+      throw Error(`Matches for playoff with ID ${playoffID} do not exist \n${error}`)
     })
 
     await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
@@ -238,7 +275,7 @@ const hlAPI = {
     if (!seasonID) throw Error('Season ID is not defined')
     let info = {}
     info['statistics'] = _req('get', Endpoints.SEASON_CASTER_STATISTICS(seasonID)).catch((error) => {
-      throw Error('Season with ID ' + seasonID + ' does not exist' + '\n' + error)
+      throw Error(`Season with ID ${seasonID} does not exist \n${error}`)
     })
 
     await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
@@ -254,7 +291,9 @@ const hlAPI = {
 
   getSeasons: async (numberToRequest) => {
     let info = {}
-    info['seasons'] = _reqMulti('get', Endpoints.SEASONS(), numberToRequest)
+    info['seasons'] = _reqMulti('get', Endpoints.SEASONS(), numberToRequest).catch((error) => {
+      throw error
+    })
 
     return info['seasons']
   },
@@ -263,16 +302,16 @@ const hlAPI = {
     if (!seasonID) throw Error('Season ID is not defined')
     let info = {}
     info['season'] = _req('get', Endpoints.SEASONS(seasonID)).catch((error) => {
-      throw Error('Season with ID ' + seasonID + ' does not exist' + '\n' + error)
+      throw Error(`Season with ID ${seasonID} does not exist \n${error}`)
     })
     info['teams'] = _req('get', Endpoints.SEASON_TEAMS(seasonID)).catch((error) => {
-      throw Error('Season with ID ' + seasonID + ' does not exist' + '\n' + error)
+      throw Error(`Teams for season with ID ${seasonID} do not exist \n${error}`)
     })
     info['divisions'] = _req('get', Endpoints.SEASON_DIVISIONS(seasonID)).catch((error) => {
-      throw Error('Can not get divisions ' + error)
+      throw Error(`Divisions for season with ID ${seasonID} do not exist \n${error}`)
     })
     info['playoffs'] = _req('get', Endpoints.SEASON_PLAYOFFS(seasonID)).catch((error) => {
-      throw Error('Playoffs for season with ID ' + seasonID + ' do not exist' + '\n' + error)
+      throw Error(`Playoffs for season with ID ${seasonID} do not exist \n${error}`)
     })
 
     await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
@@ -293,7 +332,9 @@ const hlAPI = {
 
   getSloths: async (numberToRequest) => {
     let info = {}
-    info['sloths'] = _reqMulti('get', Endpoints.SLOTHS(), numberToRequest)
+    info['sloths'] = _reqMulti('get', Endpoints.SLOTHS(), numberToRequest).catch((error) => {
+      throw error
+    })
 
     return info['sloths']
   },
@@ -302,7 +343,7 @@ const hlAPI = {
     if (!slothID) throw Error('Sloth ID is not defined')
     let info = {}
     info['sloth'] = _req('get', Endpoints.SLOTHS(slothID)).catch((error) => {
-      throw Error('Sloth with ID ' + slothID + ' does not exist' + '\n' + error)
+      throw Error(`Sloth with ID ${slothID} does not exist \n${error}`)
     })
 
     await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
@@ -318,7 +359,9 @@ const hlAPI = {
 
   getTalents: async (numberToRequest) => {
     let info = {}
-    info['talents'] = _reqMulti('get', Endpoints.TALENTS(), numberToRequest)
+    info['talents'] = _reqMulti('get', Endpoints.TALENTS(), numberToRequest).catch((error) => {
+      throw error
+    })
 
     return info['talents']
   },
@@ -327,7 +370,7 @@ const hlAPI = {
     if (!talentID) throw Error('Talent ID is not defined')
     let info = {}
     info['talent'] = _req('get', Endpoints.TALENTS(talentID)).catch((error) => {
-      throw Error('Talent with ID ' + talentID + ' does not exist' + '\n' + error)
+      throw Error(`Talent with ID ${talentID} does not exist \n${error}`)
     })
 
     await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
@@ -343,7 +386,9 @@ const hlAPI = {
 
   getTeams: async (numberToRequest) => {
     let info = {}
-    info['teams'] = _reqMulti('get', Endpoints.TEAMS(), numberToRequest)
+    info['teams'] = _reqMulti('get', Endpoints.TEAMS(), numberToRequest).catch((error) => {
+      throw error
+    })
 
     return info['teams']
   },
@@ -352,19 +397,19 @@ const hlAPI = {
     if (!teamID) throw Error('Team ID is not defined')
     let info = {}
     info['team'] = _req('get', Endpoints.TEAMS(teamID)).catch((error) => {
-      throw Error('Team with ID ' + teamID + ' does not exist' + '\n' + error)
+      throw Error(`Team with ID ${teamID} does not exist \n${error}`)
     })
 
     info['logo'] = _req('get', Endpoints.TEAM_LOGO(teamID)).catch((error) => {
       if (error.message === 'Parse JSON response') {
-        console.log('Team with ID ' + teamID + ' does not have a custom logo')
+        console.log(`Team with ID ${teamID} does not have a custom logo`)
         info['logo'] = {}
       } else {
-        throw Error('Logo for team with ID ' + teamID + ' does not exist' + '\n' + error)
+        throw Error(`Logo for team with ID ${teamID} does not exist \n${error}`)
       }
     })
     info['sloths'] = _req('get', Endpoints.TEAM_SLOTHS(teamID)).catch((error) => {
-      throw Error('Sloths for team with ID ' + teamID + ' do not exist' + '\n' + error)
+      throw Error(`Sloths for team with ID ${teamID} do not exist \n${error}`)
     })
 
     await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
@@ -387,7 +432,7 @@ const hlAPI = {
     if (!teamID) throw Error('Team ID is not defined')
     let info = {}
     info['matches'] = _req('get', Endpoints.TEAM_MATCHES(teamID)).catch((error) => {
-      throw Error('Matches for team with ID ' + teamID + ' do not exist' + '\n' + error)
+      throw Error(`Matches for team with ID ${teamID} do not exist \n${error}`)
     })
 
     await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
@@ -405,7 +450,7 @@ const hlAPI = {
     if (!teamID) throw Error('Team ID is not defined')
     let info = {}
     info['entries'] = _req('get', Endpoints.TEAM_TIMELINE(teamID)).catch((error) => {
-      throw Error('Timeline for team with ID ' + teamID + ' does not exist' + '\n' + error)
+      throw Error(`Timeline for team with ID ${teamID} does not exist \n${error}`)
     })
 
     await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
@@ -520,9 +565,9 @@ let makeRequest = (options) => {
           if (res.statusCode === 200) {
             resolve(response)
           } else if (res.statusCode === 400) {
-            reject(Error('Status Code ' + res.statusCode + ': Value does not exist'))
+            reject(Error(`Status Code ${res.statusCode} : Value does not exist`))
           } else {
-            reject(Error('Status Code ' + res.statusCode + ': Invalid request'))
+            reject(Error(`status Code ${res.statusCode} : Invalid request`))
           }
         } catch (err) {
           reject(Error('Parse JSON response'))
@@ -551,122 +596,132 @@ let mapObjectToArray = (object) => {
 const Endpoints = {
 
   BANS: (banID) => {
-    return API + '/bans' + (banID ? '/' + banID : '')
+    return `${API}/bans${banID ? `/${banID}` : ''}`
   },
   BANS_ALL: () => {
-    return Endpoints.BANS() + 'All'
+    return `${Endpoints.BANS()}All`
   },
 
   DIVISIONS: (divisionID) => {
-    return API + '/divisions' + (divisionID ? '/' + divisionID : '')
+    return `${API}/divisions${divisionID ? `/${divisionID}` : ''}`
   },
   DIVISIONS_ALL: () => {
-    return Endpoints.DIVISIONS() + 'All'
+    return `${Endpoints.DIVISIONS()}All`
   },
   DIVISION_TEAMS: (divisionID) => {
-    return Endpoints.DIVISIONS(divisionID) + '/teams'
+    return `${Endpoints.DIVISIONS(divisionID)}/teams`
+  },
+
+  GAMES: (gameID) => {
+    return `${API}/games${gameID ? `/${gameID}` : ''}`
+  },
+  GAMES_ALL: () => {
+    return `${Endpoints.GAMES()}All`
+  },
+  GAMES_ALL_WITH_PLAYERS: () => {
+    return `${Endpoints.GAMES_ALL()}WithPlayers`
   },
 
   HEROES: (heroID) => {
-    return API + '/heroes' + (heroID ? '/' + heroID : '')
+    return `${API}/heroes${heroID ? `/${heroID}` : ''}`
   },
   HEROES_ALL: () => {
-    return Endpoints.HEROES() + 'All'
+    return `${Endpoints.HEROES()}All`
   },
 
   MATCHES: (matchID) => {
-    return API + '/matches' + (matchID ? '/' + matchID : '')
+    return `${API}/matches${matchID ? `/${matchID}` : ''}`
   },
   MATCHES_ALL: () => {
-    return Endpoints.MATCHES() + 'All'
+    return `${Endpoints.MATCHES()}All`
   },
   MATCHES_TODAY: () => {
-    return Endpoints.MATCHES() + '/today'
+    return `${Endpoints.MATCHES()}/today`
   },
   MATCH_TEAMS: (matchID) => {
-    return Endpoints.MATCHES(matchID) + '/teams'
+    return `${Endpoints.MATCHES(matchID)}/teams`
   },
   MATCH_CASTERS: (matchID) => {
-    return Endpoints.MATCHES(matchID) + '/caster'
+    return `${Endpoints.MATCHES(matchID)}/caster`
   },
   MATCH_GAMES: (matchID) => {
-    return Endpoints.MATCHES(matchID) + '/games'
+    return `${Endpoints.MATCHES(matchID)}/games`
   },
   MATCH_REPLAYS: (matchID) => {
-    return Endpoints.MATCHES(matchID) + '/replays'
+    return `${Endpoints.MATCHES(matchID)}/replays`
   },
 
   PLAYOFFS: (playoffID) => {
-    return API + '/playoffs' + (playoffID ? '/' + playoffID : '')
+    return `${API}/playoffs${playoffID ? `/${playoffID}` : ''}`
   },
   PLAYOFFS_ALL: () => {
-    return Endpoints.PLAYOFFS() + 'All'
+    return `${Endpoints.PLAYOFFS()}All`
   },
   PLAYOFF_DIVISIONS: (playoffID) => {
-    return Endpoints.PLAYOFFS(playoffID) + '/divisions'
+    return `${Endpoints.PLAYOFFS(playoffID)}/divisions`
   },
   PLAYOFF_MATCHES: (playoffID) => {
-    return Endpoints.PLAYOFFS(playoffID) + '/matches'
+    return `${Endpoints.PLAYOFFS(playoffID)}/matches`
   },
 
   SEASONS: (seasonID) => {
-    return API + '/seasons' + (seasonID ? '/' + seasonID : '')
+    return `${API}/seasons${seasonID ? `/${seasonID}` : ''}`
   },
   SEASON_ALL: () => {
-    return Endpoints.SEASONS() + 'All'
+    return `${Endpoints.SEASONS()}All`
   },
   SEASON_CASTER_STATISTICS: (seasonID) => {
-    return Endpoints.SEASONS(seasonID) + '/casterstatistics'
+    return `${Endpoints.SEASONS(seasonID)}/casterstatistics`
   },
   SEASON_DIVISIONS: (seasonID) => {
-    return Endpoints.SEASONS(seasonID) + '/divisions'
+    return `${Endpoints.SEASONS(seasonID)}/divisions`
   },
   SEASON_PLAYOFFS: (seasonID) => {
-    return Endpoints.SEASONS(seasonID) + '/playoffs'
+    return `${Endpoints.SEASONS(seasonID)}/playoffs`
   },
   SEASON_TEAMS: (seasonID) => {
-    return Endpoints.SEASONS(seasonID) + '/teams'
+    return `${Endpoints.SEASONS(seasonID)}/teams`
   },
 
   SLOTHS: (slothID) => {
-    return API + '/sloths' + (slothID ? '/' + slothID : '')
+    return `${API}/sloths${slothID ? `/${slothID}` : ''}`
   },
   SLOTHS_ALL: () => {
-    return Endpoints.SLOTHS() + 'All'
+    return `${Endpoints.SLOTHS()}All`
   },
 
   TALENTS: (talentID) => {
-    return API + '/talents' + (talentID ? '/' + talentID : '')
+    return `${API}/talents${talentID ? `/${talentID}` : ''}`
   },
   TALENTS_ALL: () => {
-    return Endpoints.TALENTS() + 'All'
+    return `${Endpoints.TALENTS()}All`
   },
 
   TEAMS: (teamID) => {
-    return API + '/teams' + (teamID ? '/' + teamID : '')
+    return `${API}/teams${teamID ? `/${teamID}` : ''}`
   },
   TEAMS_ALL: () => {
-    return Endpoints.TEAMS() + 'All'
+    return `${Endpoints.TEAMS()}All`
   },
   TEAM_SLOTHS: (teamID) => {
-    return Endpoints.TEAMS(teamID) + '/sloths'
+    return `${Endpoints.TEAMS(teamID)}/sloths`
   },
   TEAM_LOGO: (teamID) => {
-    return Endpoints.TEAMS(teamID) + '/logo'
+    return `${Endpoints.TEAMS(teamID)}/logo`
   },
   TEAM_MATCHES: (teamID) => {
-    return Endpoints.TEAMS(teamID) + '/matches'
+    return `${Endpoints.TEAMS(teamID)}/matches`
   },
   TEAM_TIMELINE: (teamID) => {
-    return Endpoints.TEAMS(teamID) + '/timelines'
+    return `${Endpoints.TEAMS(teamID)}/timelines`
   },
 
   TIMELINE_ENTRIES: (entryID) => {
-    return API + '/timeline' + (entryID ? '/' + entryID : '')
+    return `${API}/timeline${entryID ? `/${entryID}` : ''}`
   },
 
   TWITCH_CHANNELS: (channelID) => {
-    return API + '/channel' + (channelID ? '/' + channelID : '')
+    return `${API}/channel${channelID ? `/${channelID}` : ''}`
   }
 
 }

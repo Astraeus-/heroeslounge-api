@@ -4,7 +4,7 @@ const hlAPI = require('./index.js')
 // Start time of the data request.
 let start = Date.now()
 
-// hlAPI.getBanInfo(-1).then((response) => {
+// hlAPI.getBanInfo(27).then((response) => {
 //   console.log(response)
 // }).catch((error) => {
 //   console.log(error)
@@ -14,7 +14,7 @@ let start = Date.now()
 // }).catch((error) => {
 //   console.log(error)
 // })
-//
+
 // hlAPI.getDivisions().then((response) => {
 //   response.forEach((division) => {
 //     console.log(division.season_id + ': ' + division.title)
@@ -22,6 +22,18 @@ let start = Date.now()
 // }).catch((error) => {
 //   console.log(error)
 // })
+// hlAPI.getGames(6).then((response) => {
+//   console.log(response)
+// }).catch((error) => {
+//   console.log(error)
+// })
+//
+// hlAPI.getGameInfo(9).then((response) => {
+//   console.log(response)
+// }).catch((error) => {
+//   console.log(error)
+// })
+//
 // hlAPI.getHeroes().then((response) => {
 //   response.forEach((hero) => {
 //     console.log(hero.id + ': ' + hero.title)
@@ -30,6 +42,11 @@ let start = Date.now()
 //   console.log(error)
 // })
 //
+// hlAPI.getHeroInfo(-1).then((response) => {
+//   console.log(response)
+// }).catch((error) => {
+//   console.log(error)
+// })
 // hlAPI.getMatches().then((response) => {
 //   response.forEach((match) => {
 //     console.log(match.id + ': ' + match.wbp)
@@ -38,7 +55,7 @@ let start = Date.now()
 //   console.log(error)
 // })
 //
-// hlAPI.getMatchInfo(1474).then((response) => {
+// hlAPI.getMatchInfo(16).then((response) => {
 //   console.log(response)
 // }).catch((error) => {
 //   console.log(error)
@@ -82,7 +99,7 @@ let start = Date.now()
 //   console.log(error)
 // })
 
-// hlAPI.getTeams(50).then(async (teams) => {
+// hlAPI.getTeams(25).then(async (teams) => {
 //   console.log(Math.ceil(teams.length / 20) + ' pages of team data')
 //   console.log(teams.length)
 //   let allTeamData = []
@@ -172,5 +189,4 @@ let mapObjectToArray = (object) => {
   return objectArray
 }
 
-// Try to combine _req and _reqMulti.
 // Add a proper test script for all of the functions.
