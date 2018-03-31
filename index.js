@@ -462,6 +462,33 @@ const hlAPI = {
     })
 
     return info['entries']
+  },
+
+  getTwitchChannels: async (numberToRequest) => {
+    let info = {}
+    info['channels'] = _reqMulti('get', Endpoints.TWITCH_CHANNELS(), numberToRequest).catch((error) => {
+      throw error
+    })
+
+    return info['channels']
+  },
+
+  getTwitchChannelInfo: async (channelID) => {
+    if (!channelID) throw Error('Channel ID is not defined')
+    let info = {}
+    info['channel'] = _req('get', Endpoints.TWITCH_CHANNELS(channelID)).catch((error) => {
+      throw Error(`Twitch channel with ID ${channelID} does not exist \n${error}`)
+    })
+
+    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
+      for (let i = 0; i < promiseArray.length; i += 2) {
+        info[promiseArray[i]] = promiseArray[i + 1]
+      }
+    }).catch((error) => {
+      throw error
+    })
+
+    return info['channel']
   }
 
 }
