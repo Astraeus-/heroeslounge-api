@@ -1,5 +1,5 @@
 {
-  "name": "heroesloungeapi",
+  "name": "heroeslounge-api",
   "version": "1.0.0",
   "description": "A simple node.js wrapper for the Heroes Lounge API",
   "main": "index.js",
