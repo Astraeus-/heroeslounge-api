@@ -4,10 +4,12 @@
   "description": "A simple node js wrapper for the Heroes Lounge API",
   "main": "index.js",
   "scripts": {
-    "start": "node main.js",
     "test": "standard"
   },
   "author": "Astraeus-",
+  "bugs": {
+    "url": "https://github.com/Astraeus-/heroeslounge-api/issues"
+  },
   "license": "ISC",
   "dependencies": {},
   "engines": {
