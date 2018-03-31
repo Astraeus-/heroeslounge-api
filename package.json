@@ -1,7 +1,7 @@
 {
   "name": "heroeslounge-api",
   "version": "1.0.0",
-  "description": "A simple node.js wrapper for the Heroes Lounge API",
+  "description": "A simple node js wrapper for the Heroes Lounge API",
   "main": "index.js",
   "scripts": {
     "start": "node main.js",
