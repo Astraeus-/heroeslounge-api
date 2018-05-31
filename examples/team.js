@@ -7,7 +7,19 @@ hlAPI.getTeams().then((response) => {
   console.log(error)
 })
 
-hlAPI.getTeamInfo(1).then((response) => {
+hlAPI.getTeamInfo(2).then((response) => {
+  console.log(response)
+}).catch((error) => {
+  console.log(error)
+})
+
+hlAPI.getTeamMatches(2).then((response) => {
+  console.log(response)
+}).catch((error) => {
+  console.log(error)
+})
+
+hlAPI.getTeamTimelineEntries(2).then((response) => {
   console.log(response)
 }).catch((error) => {
   console.log(error)

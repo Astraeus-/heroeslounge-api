@@ -12,3 +12,9 @@ hlAPI.getSeasonInfo(3).then((response) => {
 }).catch((error) => {
   console.log(error)
 })
+
+hlAPI.getSeasonCasterStatistics(3).then((response) => {
+  console.log(response)
+}).catch((error) => {
+  console.log(error)
+})
