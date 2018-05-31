@@ -4,6 +4,7 @@
   "description": "A simple node js wrapper for the Heroes Lounge API",
   "main": "index.js",
   "scripts": {
+    "start": "node test.js",
     "test": "standard"
   },
   "author": "Astraeus-",

@@ -402,7 +402,7 @@ const hlAPI = {
 
     info['logo'] = _req('get', Endpoints.TEAM_LOGO(teamID)).catch((error) => {
       if (error.message === 'Parse JSON response') {
-        console.log(`Team with ID ${teamID} does not have a custom logo`)
+        // console.log(`Team with ID ${teamID} does not have a custom logo`)
         info['logo'] = {}
       } else {
         throw Error(`Logo for team with ID ${teamID} does not exist \n${error}`)
@@ -505,7 +505,7 @@ let requestQueue = []
 
 // prototype multi-request
 let _reqMulti = async (type, endpoint, limit) => {
-  if (typeof limit !== 'undefined' && typeof limit !== 'number') throw Error('numberToRequest is not of type number')
+  if (typeof limit !== 'undefined' && typeof limit !== 'number') throw TypeError('numberToRequest is not of type number')
   let returnData = []
   let pageData = {}
   let pageDataSize
@@ -567,8 +567,10 @@ let _req = (type, endpoint) => {
       let nextRequest = requestQueue.length === 0 ? rateLimitInterval - timeSinceLastRequest : (requestQueue.length - 1) * rateLimitInterval + rateLimitInterval
       setTimeout(() => {
         makeRequest(options).then((response) => {
+          deleteRequestQueueElement(options.method, options.path)
           resolve(response)
         }).catch((error) => {
+          deleteRequestQueueElement(options.method, options.path)
           reject(error)
         })
       }, nextRequest)
@@ -608,6 +610,13 @@ let makeRequest = (options) => {
 
     req.end()
   })
+}
+
+let deleteRequestQueueElement = (type, endpoint) => {
+  let arrayIndex = requestQueue.findIndex((request) => {
+    return request.type === type && request.endpoint === endpoint
+  })
+  requestQueue.splice(arrayIndex, 1)
 }
 
 // Maps an object to an array.
