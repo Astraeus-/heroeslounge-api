@@ -503,11 +503,10 @@ let rateLimitInterval = 100
 let lastRequestTime = Date.now() - rateLimitInterval // Initialize to allow instant request at start up.
 let requestQueue = []
 
-// prototype multi-request
 let _reqMulti = async (type, endpoint, limit) => {
   if (typeof limit !== 'undefined' && typeof limit !== 'number') throw TypeError('numberToRequest is not of type number')
   let returnData = []
-  let pageData = {}
+  let pageData = []
   let pageDataSize
   let currentPage
 
@@ -515,7 +514,7 @@ let _reqMulti = async (type, endpoint, limit) => {
 
   // Initial request.
   await _req(type, endpoint).then((response) => {
-    pageData[1] = response.data
+    pageData.push(response)
     pageDataSize = response.per_page
     currentPage = response.current_page
     nPagesToRequest = limit ? Math.min(Math.max(Math.ceil(limit / pageDataSize), 1), response.last_page) : response.last_page
@@ -523,16 +522,15 @@ let _reqMulti = async (type, endpoint, limit) => {
     throw error
   })
 
-  for (let i = currentPage; i <= nPagesToRequest; i++) {
-    pageData[i] = _req('get', endpoint + '?page=' + i).catch((error) => {
-      throw error
-    })
+  // Subsequent requests for additional data if required.
+  for (let i = currentPage + 1; i <= nPagesToRequest; i++) {
+    pageData.push(_req('get', endpoint + '?page=' + i))
   }
 
-  await Promise.all(mapObjectToArray(pageData)).then((promiseArray) => {
-    for (let i = 0; i < promiseArray.length; i += 2) {
-      returnData = returnData.concat(promiseArray[i + 1].data)
-    }
+  await Promise.all(pageData).then((values) => {
+    values.forEach((value) => {
+      returnData = returnData.concat(value.data)
+    })
   }).catch((error) => {
     throw error
   })
@@ -566,11 +564,10 @@ let _req = (type, endpoint) => {
       requestQueue.push({'type': type, 'endpoint': endpoint})
       let nextRequest = requestQueue.length === 0 ? rateLimitInterval - timeSinceLastRequest : (requestQueue.length - 1) * rateLimitInterval + rateLimitInterval
       setTimeout(() => {
+        deleteRequestQueueElement(options.method, options.path)
         makeRequest(options).then((response) => {
-          deleteRequestQueueElement(options.method, options.path)
           resolve(response)
         }).catch((error) => {
-          deleteRequestQueueElement(options.method, options.path)
           reject(error)
         })
       }, nextRequest)
