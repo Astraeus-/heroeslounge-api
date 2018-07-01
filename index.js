@@ -586,17 +586,17 @@ let makeRequest = (options) => {
       })
 
       res.on('end', () => {
-        try {
-          let response = JSON.parse(rawResponse)
-          if (res.statusCode === 200) {
-            resolve(response)
-          } else if (res.statusCode === 400) {
-            reject(Error(`Status Code ${res.statusCode} : Value does not exist`))
-          } else {
-            reject(Error(`status Code ${res.statusCode} : Invalid request`))
+
+        if (res.statusCode === 200) {
+          try {
+            let response = JSON.parse(rawResponse)
+          } catch (err) {
+            reject(Error('Parse JSON response'))
           }
-        } catch (err) {
-          reject(Error('Parse JSON response'))
+        } else if (res.statusCode === 400) {
+          reject(Error(`Status Code ${res.statusCode} : Value does not exist`))
+        } else {
+          reject(Error(`status Code ${res.statusCode} : Invalid request`))
         }
       })
     })
