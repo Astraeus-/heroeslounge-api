@@ -586,10 +586,10 @@ let makeRequest = (options) => {
       })
 
       res.on('end', () => {
-
         if (res.statusCode === 200) {
           try {
             let response = JSON.parse(rawResponse)
+            resolve(response)
           } catch (err) {
             reject(Error('Parse JSON response'))
           }
