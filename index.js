@@ -53,13 +53,15 @@ const hlAPI = {
     }) : null
 
     await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
+      for (let i = 0; i <promiseArray.length; i += 2) {
         if (typeof promiseArray[i + 1] === 'object') {
-          if (promiseArray[i] === 'ban') continue
-          info['ban'][promiseArray[i]] = promiseArray[i + 1]
           delete info[promiseArray[i]]
+          if (promiseArray[i] === 'ban') {
+            info[promiseArray[i]] = promiseArray[i + 1]
+          } else {
+            info['ban'][promiseArray[i]] = promiseArray[i + 1]
+          }
         }
-        info[promiseArray[i]] = promiseArray[i + 1]
       }
     }).catch((error) => {
       throw error
@@ -218,13 +220,15 @@ const hlAPI = {
     })
 
     await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
+      for (let i = 0; i <promiseArray.length; i += 2) {
         if (typeof promiseArray[i + 1] === 'object') {
-          if (promiseArray[i] === 'match') continue
-          info['match'][promiseArray[i]] = promiseArray[i + 1]
           delete info[promiseArray[i]]
+          if (promiseArray[i] === 'match') {
+            info[promiseArray[i]] = promiseArray[i + 1]
+          } else {
+            info['match'][promiseArray[i]] = promiseArray[i + 1]
+          }
         }
-        info[promiseArray[i]] = promiseArray[i + 1]
       }
     }).catch((error) => {
       throw error
@@ -256,19 +260,21 @@ const hlAPI = {
     })
 
     await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
+      for (let i = 0; i <promiseArray.length; i += 2) {
         if (typeof promiseArray[i + 1] === 'object') {
-          if (promiseArray[i] === 'playoff') continue
-          info['playoff'][promiseArray[i]] = promiseArray[i + 1]
           delete info[promiseArray[i]]
+          if (promiseArray[i] === 'playoff') {
+            info[promiseArray[i]] = promiseArray[i + 1]
+          } else {
+            info['playoff'][promiseArray[i]] = promiseArray[i + 1]
+          }
         }
-        info[promiseArray[i]] = promiseArray[i + 1]
       }
     }).catch((error) => {
       throw error
     })
 
-    return info
+    return info['playoff']
   },
 
   getSeasonCasterStatistics: async (seasonID) => {
@@ -315,19 +321,21 @@ const hlAPI = {
     })
 
     await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
+      for (let i = 0; i <promiseArray.length; i += 2) {
         if (typeof promiseArray[i + 1] === 'object') {
-          if (promiseArray[i] === 'season') continue
-          info['season'][promiseArray[i]] = promiseArray[i + 1]
           delete info[promiseArray[i]]
+          if (promiseArray[i] === 'season') {
+            info[promiseArray[i]] = promiseArray[i + 1]
+          } else {
+            info['season'][promiseArray[i]] = promiseArray[i + 1]
+          }
         }
-        info[promiseArray[i]] = promiseArray[i + 1]
       }
     }).catch((error) => {
       throw error
     })
 
-    return info
+    return info['season']
   },
 
   getSloths: async (numberToRequest) => {
@@ -413,13 +421,15 @@ const hlAPI = {
     })
 
     await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
+      for (let i = 0; i <promiseArray.length; i += 2) {
         if (typeof promiseArray[i + 1] === 'object') {
-          if (promiseArray[i] === 'ban') continue
-          info['team'][promiseArray[i]] = promiseArray[i + 1]
           delete info[promiseArray[i]]
+          if (promiseArray[i] === 'team') {
+            info[promiseArray[i]] = promiseArray[i + 1]
+          } else {
+            info['team'][promiseArray[i]] = promiseArray[i + 1]
+          }
         }
-        info[promiseArray[i]] = promiseArray[i + 1]
       }
     }).catch((error) => {
       throw error
