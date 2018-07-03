@@ -268,7 +268,7 @@ const hlAPI = {
       throw error
     })
 
-    return info['playoff']
+    return info
   },
 
   getSeasonCasterStatistics: async (seasonID) => {
@@ -327,7 +327,7 @@ const hlAPI = {
       throw error
     })
 
-    return info['season']
+    return info
   },
 
   getSloths: async (numberToRequest) => {
