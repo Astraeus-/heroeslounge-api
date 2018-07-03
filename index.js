@@ -207,7 +207,7 @@ const hlAPI = {
       throw Error(`Teams for match with ID ${matchID} do not exist \n${error}`)
     })
     info['twitch'] = info['match'].channel_id ? _req('get', Endpoints.TWITCH_CHANNELS(info['match'].channel_id)).catch((error) => {
-      throw Error(`Twtich channel for match with ID ${matchID} does not exist \n${error}`)
+      throw Error(`Twitch channel for match with ID ${matchID} does not exist \n${error}`)
     }) : null
     info['casters'] = info['match'].channel_id ? _req('get', Endpoints.MATCH_CASTERS(matchID)).catch((error) => {
       throw Error(`Casters for match with ID ${matchID} do not exist \n${error}`)
