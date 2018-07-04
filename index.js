@@ -53,7 +53,7 @@ const hlAPI = {
     }) : null
 
     await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
-      for (let i = 0; i <promiseArray.length; i += 2) {
+      for (let i = 0; i < promiseArray.length; i += 2) {
         if (typeof promiseArray[i + 1] === 'object') {
           delete info[promiseArray[i]]
           if (promiseArray[i] === 'ban') {
@@ -220,7 +220,7 @@ const hlAPI = {
     })
 
     await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
-      for (let i = 0; i <promiseArray.length; i += 2) {
+      for (let i = 0; i < promiseArray.length; i += 2) {
         if (typeof promiseArray[i + 1] === 'object') {
           delete info[promiseArray[i]]
           if (promiseArray[i] === 'match') {
@@ -260,7 +260,7 @@ const hlAPI = {
     })
 
     await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
-      for (let i = 0; i <promiseArray.length; i += 2) {
+      for (let i = 0; i < promiseArray.length; i += 2) {
         if (typeof promiseArray[i + 1] === 'object') {
           delete info[promiseArray[i]]
           if (promiseArray[i] === 'playoff') {
@@ -321,7 +321,7 @@ const hlAPI = {
     })
 
     await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
-      for (let i = 0; i <promiseArray.length; i += 2) {
+      for (let i = 0; i < promiseArray.length; i += 2) {
         if (typeof promiseArray[i + 1] === 'object') {
           delete info[promiseArray[i]]
           if (promiseArray[i] === 'season') {
@@ -421,7 +421,7 @@ const hlAPI = {
     })
 
     await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
-      for (let i = 0; i <promiseArray.length; i += 2) {
+      for (let i = 0; i < promiseArray.length; i += 2) {
         if (typeof promiseArray[i + 1] === 'object') {
           delete info[promiseArray[i]]
           if (promiseArray[i] === 'team') {
