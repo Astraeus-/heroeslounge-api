@@ -8,9 +8,9 @@ const API = '/api/' + VERSION
 // Heroes Lounge API Methods.
 const hlAPI = {
 
-  getBans: async (numberToRequest) => {
+  getBans: async (limit) => {
     let info = {}
-    info['bans'] = await _reqMulti('get', Endpoints.BANS(), numberToRequest).catch((error) => {
+    info['bans'] = await _reqMulti('get', Endpoints.BANS(), limit).catch((error) => {
       throw error
     })
 
@@ -70,9 +70,9 @@ const hlAPI = {
     return info['ban']
   },
 
-  getDivisions: async (numberToRequest) => {
+  getDivisions: async (limit) => {
     let info = {}
-    info['divisions'] = _reqMulti('get', Endpoints.DIVISIONS(), numberToRequest).catch((error) => {
+    info['divisions'] = _reqMulti('get', Endpoints.DIVISIONS(), limit).catch((error) => {
       throw error
     })
 
@@ -100,9 +100,9 @@ const hlAPI = {
     return info
   },
 
-  getGames: async (numberToRequest) => {
+  getGames: async (limit) => {
     let info = {}
-    info['games'] = _reqMulti('get', Endpoints.GAMES(), numberToRequest).catch((error) => {
+    info['games'] = _reqMulti('get', Endpoints.GAMES(), limit).catch((error) => {
       throw error
     })
 
@@ -127,9 +127,9 @@ const hlAPI = {
     return info['game']
   },
 
-  getHeroes: async (numberToRequest) => {
+  getHeroes: async (limit) => {
     let info = {}
-    info['heroes'] = _reqMulti('get', Endpoints.HEROES(), numberToRequest).catch((error) => {
+    info['heroes'] = _reqMulti('get', Endpoints.HEROES(), limit).catch((error) => {
       throw error
     })
 
@@ -154,9 +154,9 @@ const hlAPI = {
     return info['hero']
   },
 
-  getMatches: async (numberToRequest) => {
+  getMatches: async (limit) => {
     let info = {}
-    info['matches'] = _reqMulti('get', Endpoints.MATCHES(), numberToRequest).catch((error) => {
+    info['matches'] = _reqMulti('get', Endpoints.MATCHES(), limit).catch((error) => {
       throw error
     })
 
@@ -237,9 +237,9 @@ const hlAPI = {
     return info['match']
   },
 
-  getPlayoffs: async (numberToRequest) => {
+  getPlayoffs: async (limit) => {
     let info = {}
-    info['playoffs'] = _reqMulti('get', Endpoints.PLAYOFFS(), numberToRequest).catch((error) => {
+    info['playoffs'] = _reqMulti('get', Endpoints.PLAYOFFS(), limit).catch((error) => {
       throw error
     })
 
@@ -295,9 +295,9 @@ const hlAPI = {
     return info['statistics']
   },
 
-  getSeasons: async (numberToRequest) => {
+  getSeasons: async (limit) => {
     let info = {}
-    info['seasons'] = _reqMulti('get', Endpoints.SEASONS(), numberToRequest).catch((error) => {
+    info['seasons'] = _reqMulti('get', Endpoints.SEASONS(), limit).catch((error) => {
       throw error
     })
 
@@ -338,13 +338,31 @@ const hlAPI = {
     return info['season']
   },
 
-  getSloths: async (numberToRequest) => {
+  getSloths: async (limit) => {
     let info = {}
-    info['sloths'] = _reqMulti('get', Endpoints.SLOTHS(), numberToRequest).catch((error) => {
+    info['sloths'] = _reqMulti('get', Endpoints.SLOTHS(), limit).catch((error) => {
       throw error
     })
 
     return info['sloths']
+  },
+
+  getSlothByDiscordId: async (discordID) => {
+    if (!discordID) throw Error('Discord ID is not defined')
+    let info = {}
+    info['sloth'] = _req('get', Endpoints.SLOTH_DISCORD_ID(discordID)).catch((error) => {
+      throw Error(`Sloth with Discord ID ${discordID} does not exist \n${error}`)
+    })
+
+    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
+      for (let i = 0; i < promiseArray.length; i += 2) {
+        info[promiseArray[i]] = promiseArray[i + 1]
+      }
+    }).catch((error) => {
+      throw error
+    })
+
+    return info['sloth']
   },
 
   getSlothInfo: async (slothID) => {
@@ -365,9 +383,9 @@ const hlAPI = {
     return info['sloth']
   },
 
-  getTalents: async (numberToRequest) => {
+  getTalents: async (limit) => {
     let info = {}
-    info['talents'] = _reqMulti('get', Endpoints.TALENTS(), numberToRequest).catch((error) => {
+    info['talents'] = _reqMulti('get', Endpoints.TALENTS(), limit).catch((error) => {
       throw error
     })
 
@@ -392,9 +410,9 @@ const hlAPI = {
     return info['talent']
   },
 
-  getTeams: async (numberToRequest) => {
+  getTeams: async (limit) => {
     let info = {}
-    info['teams'] = _reqMulti('get', Endpoints.TEAMS(), numberToRequest).catch((error) => {
+    info['teams'] = _reqMulti('get', Endpoints.TEAMS(), limit).catch((error) => {
       throw error
     })
 
@@ -474,9 +492,9 @@ const hlAPI = {
     return info['entries']
   },
 
-  getTwitchChannels: async (numberToRequest) => {
+  getTwitchChannels: async (limit) => {
     let info = {}
-    info['channels'] = _reqMulti('get', Endpoints.TWITCH_CHANNELS(), numberToRequest).catch((error) => {
+    info['channels'] = _reqMulti('get', Endpoints.TWITCH_CHANNELS(), limit).catch((error) => {
       throw error
     })
 
@@ -514,7 +532,7 @@ let lastRequestTime = Date.now() - rateLimitInterval // Initialize to allow inst
 let requestQueue = []
 
 let _reqMulti = async (type, endpoint, limit) => {
-  if (typeof limit !== 'undefined' && typeof limit !== 'number') throw TypeError('numberToRequest is not of type number')
+  if (typeof limit !== 'undefined' && typeof limit !== 'number') throw TypeError('limit is not of type number')
   let returnData = []
   let pageData = []
   let pageDataSize
@@ -726,6 +744,9 @@ const Endpoints = {
     return `${Endpoints.SEASONS(seasonID)}/teams`
   },
 
+  SLOTH_DISCORD_ID: (discordID) => {
+    return `${API}/slothDiscordId/${discordID}`
+  },
   SLOTHS: (slothID) => {
     return `${API}/sloths${slothID ? `/${slothID}` : ''}`
   },
