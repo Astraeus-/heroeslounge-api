@@ -189,8 +189,8 @@ const hlAPI = {
       })
 
       // Removes all the casters that are not approved for casting the match.
-      for (let caster in info['matches'][match]['casters']) {
-        if (info['matches'][match]['casters'][caster].pivot.approved !== '1') info['matches'][match]['casters'].splice(caster, 1)
+      for (let i = info['matches'][match]['casters'].length - 1; i >= 0; i--) {
+        if (info['matches'][match]['casters'][i].pivot.approved !== '1') info['matches'][match]['casters'].splice(i, 1)
       }
     }
     return info['matches']
