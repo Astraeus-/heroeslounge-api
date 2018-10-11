@@ -188,9 +188,11 @@ const hlAPI = {
         throw error
       })
 
-      // Removes all the casters that are not approved for casting the match.
-      for (let i = info['matches'][match]['casters'].length - 1; i >= 0; i--) {
-        if (info['matches'][match]['casters'][i].pivot.approved !== '1') info['matches'][match]['casters'].splice(i, 1)
+      // Removes casters that are not approved for casting the match.
+      if (info['matches'][match]['casters']) {
+        for (let i = info['matches'][match]['casters'].length - 1; i >= 0; i--) {
+          if (info['matches'][match]['casters'][i].pivot.approved !== '1') info['matches'][match]['casters'].splice(i, 1)
+        }
       }
     }
     return info['matches']
