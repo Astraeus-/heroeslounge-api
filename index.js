@@ -198,6 +198,19 @@ const hlAPI = {
     return info['matches']
   },
 
+  getMatchesWithApprovedCastBetween: async (startDate, endDate) => {
+    if (!startDate || !endDate) throw Error('Date interval is not defined')
+    if (!startDate.match(/\d{4}-\d{1,2}-\d{1,2}/g) ||
+        !endDate.match(/\d{4}-\d{1,2}-\d{1,2}/g)) throw Error('Invalid date syntax, must be of type: YYYY-MM-DD')
+    let info = {}
+
+    info['matches'] = await _req('get', Endpoints.MATCHES_WITH_APPROVED_CAST_BETWEEN(startDate, endDate)).catch((error) => {
+      throw Error(`Could not get matches with aprroved cast between ${startDate} - ${endDate}\n${error}`)
+    })
+
+    return info['matches']
+  },
+
   getMatchInfo: async (matchID) => {
     if (!matchID) throw Error('Match ID is not defined')
     let info = {}
@@ -694,6 +707,9 @@ const Endpoints = {
 
   MATCHES: (matchID) => {
     return `${API}/matches${matchID ? `/${matchID}` : ''}`
+  },
+  MATCHES_WITH_APPROVED_CAST_BETWEEN: (startDate, endDate) => {
+    return `${API}/matches/withApprovedCastBetween/${startDate}/${endDate}`
   },
   MATCHES_ALL: () => {
     return `${Endpoints.MATCHES()}All`
