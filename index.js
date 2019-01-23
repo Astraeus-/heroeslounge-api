@@ -8,532 +8,308 @@ const API = '/api/' + VERSION
 // Heroes Lounge API Methods.
 const hlAPI = {
 
-  getBans: async (limit) => {
-    let info = {}
-    info['bans'] = await _reqMulti('get', Endpoints.BANS(), limit).catch((error) => {
-      throw error
-    })
-
-    for (let ban in info['bans']) {
-      info['bans'][ban]['hero'] = info['bans'][ban].hero_id ? _req('get', Endpoints.HEROES(info['bans'][ban].hero_id)).catch((error) => {
-        throw Error(`Hero with ID ${info['bans'][ban].hero_id} does not exist \n${error}`)
-      }) : null
-      info['bans'][ban]['talent'] = info['bans'][ban].talent_id ? _req('get', Endpoints.TALENTS(info['bans'][ban].talent_id)).catch((error) => {
-        throw Error(`Talent with ID ${info['bans'][ban].talent_id} does not exist \n${error}`)
-      }) : null
-
-      await Promise.all(mapObjectToArray(info['bans'][ban])).then((promiseArray) => {
-        for (let i = 0; i < promiseArray.length; i += 2) {
-          info['bans'][ban][promiseArray[i]] = promiseArray[i + 1]
-        }
-      }).catch((error) => {
-        throw error
-      })
-
-      // Remove no longer needed information.
-      delete info['bans'][ban].hero_id
-      delete info['bans'][ban].talent_id
-    }
-
-    return info['bans']
-  },
-
-  getBanInfo: async (banID) => {
+  getBan: async (banID) => {
     if (!banID) throw Error('Ban ID is not defined')
-    let info = {}
-    info['ban'] = await _req('get', Endpoints.BANS(banID)).catch((error) => {
+
+    return _req('get', Endpoints.BANS(banID)).catch((error) => {
       throw Error(`Ban with ID ${banID} does not exist \n${error}`)
     })
+  },
 
-    info['hero'] = info['ban'].hero_id ? _req('get', Endpoints.HEROES(info['ban'].hero_id)).catch((error) => {
-      throw Error(`Hero with ID ${info['ban'].hero_id} does not exist \n${error}`)
-    }) : null
-    info['talent'] = info['ban'].talent_id ? _req('get', Endpoints.TALENTS(info['ban'].talent_id)).catch((error) => {
-      throw Error(`Talent with ID + ${info['ban'].talent_id} does not exist \n${error}`)
-    }) : null
-
-    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
-        if (typeof promiseArray[i + 1] === 'object') {
-          delete info[promiseArray[i]]
-          if (promiseArray[i] === 'ban') {
-            info[promiseArray[i]] = promiseArray[i + 1]
-          } else {
-            info['ban'][promiseArray[i]] = promiseArray[i + 1]
-          }
-        }
-      }
-    }).catch((error) => {
+  getBans: async (limit) => {
+    return _reqMulti('get', Endpoints.BANS(), limit).catch((error) => {
       throw error
     })
+  },
 
-    return info['ban']
+  getDivision: async (divisionID) => {
+    if (!divisionID) throw Error('Division ID is not defined')
+
+    return _req('get', Endpoints.DIVISIONS(divisionID)).catch((error) => {
+      throw Error(`Division with ID ${divisionID} does not exist \n${error}`)
+    })
   },
 
   getDivisions: async (limit) => {
-    let info = {}
-    info['divisions'] = _reqMulti('get', Endpoints.DIVISIONS(), limit).catch((error) => {
+    return _reqMulti('get', Endpoints.DIVISIONS(), limit).catch((error) => {
       throw error
     })
-
-    return info['divisions']
   },
 
-  getDivisionInfo: async (divisionID) => {
+  getDivisionTeams: async (divisionID) => {
     if (!divisionID) throw Error('Division ID is not defined')
-    let info = {}
-    info['division'] = _req('get', Endpoints.DIVISIONS(divisionID)).catch((error) => {
-      throw Error(`Division with ID ${divisionID} does not exist \n${error}`)
-    })
-    info['teams'] = _req('get', Endpoints.DIVISION_TEAMS(divisionID)).catch((error) => {
-      throw Error(`Team for division with ID ${divisionID} do not exist \n${error}`)
-    })
 
-    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
-        info[promiseArray[i]] = promiseArray[i + 1]
-      }
-    }).catch((error) => {
-      throw error
+    return _req('get', Endpoints.DIVISION_TEAMS(divisionID)).catch((error) => {
+      throw Error(`Teams for division with ID ${divisionID} do not exist \n${error}`)
     })
+  },
 
-    return info
+  getGame: async (gameID) => {
+    if (!gameID) throw Error('Game ID is not defined')
+
+    return _req('get', Endpoints.GAMES(gameID)).catch((error) => {
+      throw Error(`Game with ID ${gameID} does not exist \n${error}`)
+    })
   },
 
   getGames: async (limit) => {
-    let info = {}
-    info['games'] = _reqMulti('get', Endpoints.GAMES(), limit).catch((error) => {
+    return _reqMulti('get', Endpoints.GAMES(), limit).catch((error) => {
       throw error
     })
-
-    return info['games']
   },
 
-  getGameInfo: async (gameID) => {
-    if (!gameID) throw Error('Game ID is not defined')
-    let info = {}
-    info['game'] = _req('get', Endpoints.GAMES(gameID)).catch((error) => {
-      throw Error(`Game with ID ${gameID} does not exist \n${error}`)
-    })
+  getHero: async (heroID) => {
+    if (!heroID) throw Error('Hero ID is not defined')
 
-    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
-        info[promiseArray[i]] = promiseArray[i + 1]
-      }
-    }).catch((error) => {
-      throw error
+    return _req('get', Endpoints.HEROES(heroID)).catch((error) => {
+      throw Error(`Hero with ID ${heroID} does not exist \n${error}`)
     })
-
-    return info['game']
   },
 
   getHeroes: async (limit) => {
-    let info = {}
-    info['heroes'] = _reqMulti('get', Endpoints.HEROES(), limit).catch((error) => {
+    return _reqMulti('get', Endpoints.HEROES(), limit).catch((error) => {
       throw error
     })
-
-    return info['heroes']
   },
 
-  getHeroInfo: async (heroID) => {
-    if (!heroID) throw Error('Hero ID is not defined')
-    let info = {}
-    info['hero'] = _req('get', Endpoints.HEROES(heroID)).catch((error) => {
-      throw Error(`Hero with ID ${heroID} does not exist \n${error}`)
-    })
+  getMatch: async (matchID) => {
+    if (!matchID) throw Error('Match ID is not defined')
 
-    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
-        info[promiseArray[i]] = promiseArray[i + 1]
-      }
-    }).catch((error) => {
-      throw error
+    return _req('get', Endpoints.MATCHES(matchID)).catch((error) => {
+      throw Error(`Match with ID ${matchID} does not exist \n${error}`)
     })
-
-    return info['hero']
   },
 
   getMatches: async (limit) => {
-    let info = {}
-    info['matches'] = _reqMulti('get', Endpoints.MATCHES(), limit).catch((error) => {
+    return _reqMulti('get', Endpoints.MATCHES(), limit).catch((error) => {
       throw error
     })
-
-    return info['matches']
   },
 
   getMatchesToday: async () => {
-    let info = {}
-    info['matches'] = await _req('get', Endpoints.MATCHES_TODAY()).catch((error) => {
+    return _req('get', Endpoints.MATCHES_TODAY()).catch((error) => {
       throw Error(`Could not get today's matches \n${error}`)
     })
-
-    for (let match in info['matches']) {
-      info['matches'][match]['teams'] = info['matches'][match].id ? _req('get', Endpoints.MATCH_TEAMS(info['matches'][match].id)).catch((error) => {
-        throw Error(`Teams for match with ID ${info['matches'][match].id} do not exist \n${error}`)
-      }) : null
-      info['matches'][match]['twitch'] = info['matches'][match].channel_id ? _req('get', Endpoints.TWITCH_CHANNELS(info['matches'][match].channel_id)).catch((error) => {
-        throw Error(`Twitch channel for match with ID ${info['matches'][match].id} does not exist \n${error}`)
-      }) : null
-      info['matches'][match]['casters'] = info['matches'][match].channel_id ? _req('get', Endpoints.MATCH_CASTERS(info['matches'][match].id)).catch((error) => {
-        throw Error(`Casters for match with ID ${info['matches'][match].id} do not exist \n${error}`)
-      }) : null
-
-      await Promise.all(mapObjectToArray(info['matches'][match])).then((promiseArray) => {
-        for (let i = 0; i < promiseArray.length; i += 2) {
-          info['matches'][match][promiseArray[i]] = promiseArray[i + 1]
-        }
-      }).catch((error) => {
-        throw error
-      })
-
-      // Removes casters that are not approved for casting the match.
-      if (info['matches'][match]['casters']) {
-        for (let i = info['matches'][match]['casters'].length - 1; i >= 0; i--) {
-          if (info['matches'][match]['casters'][i].pivot.approved !== '1') info['matches'][match]['casters'].splice(i, 1)
-        }
-      }
-    }
-    return info['matches']
   },
 
   getMatchesWithApprovedCastBetween: async (startDate, endDate) => {
     if (!startDate || !endDate) throw Error('Date interval is not defined')
     if (!startDate.match(/\d{4}-\d{1,2}-\d{1,2}/g) ||
         !endDate.match(/\d{4}-\d{1,2}-\d{1,2}/g)) throw Error('Invalid date syntax, must be of type: YYYY-MM-DD')
-    let info = {}
 
-    info['matches'] = await _req('get', Endpoints.MATCHES_WITH_APPROVED_CAST_BETWEEN(startDate, endDate)).catch((error) => {
+    return _req('get', Endpoints.MATCHES_WITH_APPROVED_CAST_BETWEEN(startDate, endDate)).catch((error) => {
       throw Error(`Could not get matches with aprroved cast between ${startDate} - ${endDate}\n${error}`)
     })
-
-    return info['matches']
   },
 
-  getMatchInfo: async (matchID) => {
+  getMatchCasters: async (matchID) => {
     if (!matchID) throw Error('Match ID is not defined')
-    let info = {}
-    info['match'] = await _req('get', Endpoints.MATCHES(matchID)).catch((error) => {
-      throw Error(`Match with ID ${matchID} does not exist \n${error}`)
-    })
 
-    info['teams'] = _req('get', Endpoints.MATCH_TEAMS(matchID)).catch((error) => {
-      throw Error(`Teams for match with ID ${matchID} do not exist \n${error}`)
-    })
-    info['twitch'] = info['match'].channel_id ? _req('get', Endpoints.TWITCH_CHANNELS(info['match'].channel_id)).catch((error) => {
-      throw Error(`Twitch channel for match with ID ${matchID} does not exist \n${error}`)
-    }) : null
-    info['casters'] = info['match'].channel_id ? _req('get', Endpoints.MATCH_CASTERS(matchID)).catch((error) => {
+    return _req('get', Endpoints.MATCH_CASTERS(matchID)).catch((error) => {
       throw Error(`Casters for match with ID ${matchID} do not exist \n${error}`)
-    }) : null
-    info['games'] = _req('get', Endpoints.MATCH_GAMES(matchID)).catch((error) => {
+    })
+  },
+
+  getMatchGames: async (matchID) => {
+    if (!matchID) throw Error('Match ID is not defined')
+
+    return _req('get', Endpoints.MATCH_GAMES(matchID)).catch((error) => {
       throw Error(`Games for match with ID ${matchID} do not exist \n${error}`)
     })
-    info['replays'] = _req('get', Endpoints.MATCH_REPLAYS(matchID)).catch((error) => {
+  },
+
+  getMatchReplays: async (matchID) => {
+    if (!matchID) throw Error('Match ID is not defined')
+
+    return _req('get', Endpoints.MATCH_REPLAYS(matchID)).catch((error) => {
       throw Error(`Replays for match with ID ${matchID} do not exist \n${error}`)
     })
+  },
 
-    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
-        if (typeof promiseArray[i + 1] === 'object') {
-          delete info[promiseArray[i]]
-          if (promiseArray[i] === 'match') {
-            info[promiseArray[i]] = promiseArray[i + 1]
-          } else {
-            info['match'][promiseArray[i]] = promiseArray[i + 1]
-          }
-        }
-      }
-    }).catch((error) => {
-      throw error
+  getMatchTeams: async (matchID) => {
+    if (!matchID) throw Error('Match ID is not defined')
+
+    return _req('get', Endpoints.MATCH_TEAMS(matchID)).catch((error) => {
+      throw Error(`Teams for match with ID ${matchID} do not exist \n${error}`)
     })
+  },
 
-    return info['match']
+  getPlayoff: async (playoffID) => {
+    if (!playoffID) throw Error('Playoff ID is not defined')
+
+    return _req('get', Endpoints.PLAYOFFS(playoffID)).catch((error) => {
+      throw Error(`Playoff with ID ${playoffID} does not exist \n${error}`)
+    })
   },
 
   getPlayoffs: async (limit) => {
-    let info = {}
-    info['playoffs'] = _reqMulti('get', Endpoints.PLAYOFFS(), limit).catch((error) => {
+    return _reqMulti('get', Endpoints.PLAYOFFS(), limit).catch((error) => {
       throw error
     })
-
-    return info['playoffs']
   },
 
-  getPlayoffInfo: async (playoffID) => {
+  getPlayoffDivisions: async (playoffID) => {
     if (!playoffID) throw Error('Playoff ID is not defined')
-    let info = {}
-    info['playoff'] = _req('get', Endpoints.PLAYOFFS(playoffID)).catch((error) => {
-      throw Error(`Playoff with ID ${playoffID} does not exist \n${error}`)
-    })
-    info['divisions'] = _req('get', Endpoints.PLAYOFF_DIVISIONS(playoffID)).catch((error) => {
+
+    return _req('get', Endpoints.PLAYOFF_DIVISIONS(playoffID)).catch((error) => {
       throw Error(`Divisions for playoff with ID ${playoffID} do not exist \n${error}`)
     })
-    info['matches'] = _req('get', Endpoints.PLAYOFF_MATCHES(playoffID)).catch((error) => {
+  },
+
+  getPlayoffMatches: async (playoffID) => {
+    if (!playoffID) throw Error('Playoff ID is not defined')
+
+    return _req('get', Endpoints.PLAYOFF_MATCHES(playoffID)).catch((error) => {
       throw Error(`Matches for playoff with ID ${playoffID} do not exist \n${error}`)
     })
-
-    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
-        if (typeof promiseArray[i + 1] === 'object') {
-          delete info[promiseArray[i]]
-          if (promiseArray[i] === 'playoff') {
-            info[promiseArray[i]] = promiseArray[i + 1]
-          } else {
-            info['playoff'][promiseArray[i]] = promiseArray[i + 1]
-          }
-        }
-      }
-    }).catch((error) => {
-      throw error
-    })
-
-    return info['playoff']
   },
 
   getSeasonCasterStatistics: async (seasonID) => {
     if (!seasonID) throw Error('Season ID is not defined')
-    let info = {}
-    info['statistics'] = _req('get', Endpoints.SEASON_CASTER_STATISTICS(seasonID)).catch((error) => {
+
+    return _req('get', Endpoints.SEASON_CASTER_STATISTICS(seasonID)).catch((error) => {
       throw Error(`Season with ID ${seasonID} does not exist \n${error}`)
     })
+  },
 
-    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
-        info[promiseArray[i]] = promiseArray[i + 1]
-      }
-    }).catch((error) => {
-      throw error
+  getSeason: async (seasonID) => {
+    if (!seasonID) throw Error('Season ID is not defined')
+
+    return _req('get', Endpoints.SEASONS(seasonID)).catch((error) => {
+      throw Error(`Season with ID ${seasonID} does not exist \n${error}`)
     })
-
-    return info['statistics']
   },
 
   getSeasons: async (limit) => {
-    let info = {}
-    info['seasons'] = _reqMulti('get', Endpoints.SEASONS(), limit).catch((error) => {
+    return _reqMulti('get', Endpoints.SEASONS(), limit).catch((error) => {
       throw error
     })
-
-    return info['seasons']
   },
 
-  getSeasonInfo: async (seasonID) => {
+  getSeasondivisions: async (seasonID) => {
     if (!seasonID) throw Error('Season ID is not defined')
-    let info = {}
-    info['season'] = _req('get', Endpoints.SEASONS(seasonID)).catch((error) => {
-      throw Error(`Season with ID ${seasonID} does not exist \n${error}`)
-    })
-    info['teams'] = _req('get', Endpoints.SEASON_TEAMS(seasonID)).catch((error) => {
-      throw Error(`Teams for season with ID ${seasonID} do not exist \n${error}`)
-    })
-    info['divisions'] = _req('get', Endpoints.SEASON_DIVISIONS(seasonID)).catch((error) => {
+
+    return _req('get', Endpoints.SEASON_DIVISIONS(seasonID)).catch((error) => {
       throw Error(`Divisions for season with ID ${seasonID} do not exist \n${error}`)
     })
-    info['playoffs'] = _req('get', Endpoints.SEASON_PLAYOFFS(seasonID)).catch((error) => {
+  },
+
+  getSeasonPlayoffs: async (seasonID) => {
+    if (!seasonID) throw Error('Season ID is not defined')
+
+    return _req('get', Endpoints.SEASON_PLAYOFFS(seasonID)).catch((error) => {
       throw Error(`Playoffs for season with ID ${seasonID} do not exist \n${error}`)
     })
+  },
 
-    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
-        if (typeof promiseArray[i + 1] === 'object') {
-          delete info[promiseArray[i]]
-          if (promiseArray[i] === 'season') {
-            info[promiseArray[i]] = promiseArray[i + 1]
-          } else {
-            info['season'][promiseArray[i]] = promiseArray[i + 1]
-          }
-        }
-      }
-    }).catch((error) => {
-      throw error
+  getSeasonTeams: async (seasonID) => {
+    if (!seasonID) throw Error('Season ID is not defined')
+
+    return _req('get', Endpoints.SEASON_TEAMS(seasonID)).catch((error) => {
+      throw Error(`Teams for season with ID ${seasonID} do not exist \n${error}`)
     })
+  },
 
-    return info['season']
+  getSloth: async (slothID) => {
+    if (!slothID) throw Error('Sloth ID is not defined')
+
+    return _req('get', Endpoints.SLOTHS(slothID)).catch((error) => {
+      throw Error(`Sloth with ID ${slothID} does not exist \n${error}`)
+    })
   },
 
   getSloths: async (limit) => {
-    let info = {}
-    info['sloths'] = _reqMulti('get', Endpoints.SLOTHS(), limit).catch((error) => {
+    return _reqMulti('get', Endpoints.SLOTHS(), limit).catch((error) => {
       throw error
     })
-
-    return info['sloths']
   },
 
   getSlothByDiscordId: async (discordID) => {
     if (!discordID) throw Error('Discord ID is not defined')
-    let info = {}
-    info['sloth'] = _req('get', Endpoints.SLOTH_DISCORD_ID(discordID)).catch((error) => {
+
+    return _req('get', Endpoints.SLOTH_DISCORD_ID(discordID)).catch((error) => {
       throw Error(`Sloth with Discord ID ${discordID} does not exist \n${error}`)
     })
-
-    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
-        info[promiseArray[i]] = promiseArray[i + 1]
-      }
-    }).catch((error) => {
-      throw error
-    })
-
-    return info['sloth']
   },
 
-  getSlothInfo: async (slothID) => {
-    if (!slothID) throw Error('Sloth ID is not defined')
-    let info = {}
-    info['sloth'] = _req('get', Endpoints.SLOTHS(slothID)).catch((error) => {
-      throw Error(`Sloth with ID ${slothID} does not exist \n${error}`)
-    })
+  getTalent: async (talentID) => {
+    if (!talentID) throw Error('Talent ID is not defined')
 
-    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
-        info[promiseArray[i]] = promiseArray[i + 1]
-      }
-    }).catch((error) => {
-      throw error
+    return _req('get', Endpoints.TALENTS(talentID)).catch((error) => {
+      throw Error(`Talent with ID ${talentID} does not exist \n${error}`)
     })
-
-    return info['sloth']
   },
 
   getTalents: async (limit) => {
-    let info = {}
-    info['talents'] = _reqMulti('get', Endpoints.TALENTS(), limit).catch((error) => {
+    return _reqMulti('get', Endpoints.TALENTS(), limit).catch((error) => {
       throw error
     })
-
-    return info['talents']
   },
 
-  getTalentInfo: async (talentID) => {
-    if (!talentID) throw Error('Talent ID is not defined')
-    let info = {}
-    info['talent'] = _req('get', Endpoints.TALENTS(talentID)).catch((error) => {
-      throw Error(`Talent with ID ${talentID} does not exist \n${error}`)
-    })
+  getTeam: async (teamID) => {
+    if (!teamID) throw Error('Team ID is not defined')
 
-    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
-        info[promiseArray[i]] = promiseArray[i + 1]
-      }
-    }).catch((error) => {
-      throw error
+    return _req('get', Endpoints.TEAMS(teamID)).catch((error) => {
+      throw Error(`Team with ID ${teamID} does not exist \n${error}`)
     })
-
-    return info['talent']
   },
 
   getTeams: async (limit) => {
-    let info = {}
-    info['teams'] = _reqMulti('get', Endpoints.TEAMS(), limit).catch((error) => {
+    return _reqMulti('get', Endpoints.TEAMS(), limit).catch((error) => {
       throw error
     })
-
-    return info['teams']
   },
 
-  getTeamInfo: async (teamID) => {
+  getTeamLogo: async (teamID) => {
     if (!teamID) throw Error('Team ID is not defined')
-    let info = {}
-    info['team'] = _req('get', Endpoints.TEAMS(teamID)).catch((error) => {
-      throw Error(`Team with ID ${teamID} does not exist \n${error}`)
-    })
 
-    info['logo'] = _req('get', Endpoints.TEAM_LOGO(teamID)).catch((error) => {
+    return _req('get', Endpoints.TEAM_LOGO(teamID)).catch((error) => {
       if (error.message === 'Parse JSON response') {
         // console.log(`Team with ID ${teamID} does not have a custom logo`)
-        info['logo'] = {}
+        return {}
       } else {
         throw Error(`Logo for team with ID ${teamID} does not exist \n${error}`)
       }
     })
-    info['sloths'] = _req('get', Endpoints.TEAM_SLOTHS(teamID)).catch((error) => {
-      throw Error(`Sloths for team with ID ${teamID} do not exist \n${error}`)
-    })
-
-    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
-        if (typeof promiseArray[i + 1] === 'object') {
-          delete info[promiseArray[i]]
-          if (promiseArray[i] === 'team') {
-            info[promiseArray[i]] = promiseArray[i + 1]
-          } else {
-            info['team'][promiseArray[i]] = promiseArray[i + 1]
-          }
-        }
-      }
-    }).catch((error) => {
-      throw error
-    })
-
-    return info['team']
   },
 
   getTeamMatches: async (teamID) => {
     if (!teamID) throw Error('Team ID is not defined')
-    let info = {}
-    info['matches'] = _req('get', Endpoints.TEAM_MATCHES(teamID)).catch((error) => {
+
+    return _req('get', Endpoints.TEAM_MATCHES(teamID)).catch((error) => {
       throw Error(`Matches for team with ID ${teamID} do not exist \n${error}`)
     })
+  },
 
-    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
-        info[promiseArray[i]] = promiseArray[i + 1]
-      }
-    }).catch((error) => {
-      throw error
+  getTeamSloths: async (teamID) => {
+    if (!teamID) throw Error('Team ID is not defined')
+
+    return _req('get', Endpoints.TEAM_SLOTHS(teamID)).catch((error) => {
+      throw Error(`Sloths for team with ID ${teamID} do not exist \n${error}`)
     })
-
-    return info['matches']
   },
 
   getTeamTimelineEntries: async (teamID) => {
     if (!teamID) throw Error('Team ID is not defined')
-    let info = {}
-    info['entries'] = _req('get', Endpoints.TEAM_TIMELINE(teamID)).catch((error) => {
+
+    return _req('get', Endpoints.TEAM_TIMELINE(teamID)).catch((error) => {
       throw Error(`Timeline for team with ID ${teamID} does not exist \n${error}`)
     })
+  },
 
-    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
-        info[promiseArray[i]] = promiseArray[i + 1]
-      }
-    }).catch((error) => {
-      throw error
+  getTwitchChannel: async (channelID) => {
+    if (!channelID) throw Error('Channel ID is not defined')
+
+    return _req('get', Endpoints.TWITCH_CHANNELS(channelID)).catch((error) => {
+      throw Error(`Twitch channel with ID ${channelID} does not exist \n${error}`)
     })
-
-    return info['entries']
   },
 
   getTwitchChannels: async (limit) => {
-    let info = {}
-    info['channels'] = _reqMulti('get', Endpoints.TWITCH_CHANNELS(), limit).catch((error) => {
+    return _reqMulti('get', Endpoints.TWITCH_CHANNELS(), limit).catch((error) => {
       throw error
     })
-
-    return info['channels']
-  },
-
-  getTwitchChannelInfo: async (channelID) => {
-    if (!channelID) throw Error('Channel ID is not defined')
-    let info = {}
-    info['channel'] = _req('get', Endpoints.TWITCH_CHANNELS(channelID)).catch((error) => {
-      throw Error(`Twitch channel with ID ${channelID} does not exist \n${error}`)
-    })
-
-    await Promise.all(mapObjectToArray(info)).then((promiseArray) => {
-      for (let i = 0; i < promiseArray.length; i += 2) {
-        info[promiseArray[i]] = promiseArray[i + 1]
-      }
-    }).catch((error) => {
-      throw error
-    })
-
-    return info['channel']
   }
-
 }
 
 /*
@@ -657,15 +433,6 @@ let deleteRequestQueueElement = (type, endpoint) => {
     return request.type === type && request.endpoint === endpoint
   })
   requestQueue.splice(arrayIndex, 1)
-}
-
-// Maps an object to an array.
-let mapObjectToArray = (object) => {
-  let objectArray = []
-  Object.keys(object).forEach((key) => {
-    objectArray.push(key, object[key])
-  })
-  return objectArray
 }
 
 /* Heroes Lounge Endpoints. */
