@@ -604,7 +604,7 @@ let _req = (type, endpoint) => {
         reject(error)
       })
     } else {
-      requestQueue.push({'type': type, 'endpoint': endpoint})
+      requestQueue.push({ 'type': type, 'endpoint': endpoint })
       let nextRequest = requestQueue.length === 0 ? rateLimitInterval - timeSinceLastRequest : (requestQueue.length - 1) * rateLimitInterval + rateLimitInterval
       setTimeout(() => {
         deleteRequestQueueElement(options.method, options.path)
