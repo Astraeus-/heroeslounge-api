@@ -1,13 +1,13 @@
 
 const hlAPI = require('heroeslounge-api')
 
-hlAPI.getTwitchChannels().then((response) => {
+hlAPI.getTwitchChannel(1).then((response) => {
   console.log(response)
 }).catch((error) => {
   console.log(error)
 })
 
-hlAPI.getTwitchChannelInfo(1).then((response) => {
+hlAPI.getTwitchChannels().then((response) => {
   console.log(response)
 }).catch((error) => {
   console.log(error)
