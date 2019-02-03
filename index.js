@@ -7,7 +7,6 @@ const API = '/api/' + VERSION
 
 // Heroes Lounge API Methods.
 const hlAPI = {
-
   getBan: async (banID) => {
     if (!banID) throw Error('Ban ID is not defined')
 
@@ -324,6 +323,8 @@ let requestQueue = []
 
 let _reqMulti = async (type, endpoint, limit) => {
   if (typeof limit !== 'undefined' && typeof limit !== 'number') throw TypeError('limit is not of type number')
+  if (limit === 0) return []
+
   let returnData = []
   let pageData = []
   let pageDataSize
@@ -332,18 +333,23 @@ let _reqMulti = async (type, endpoint, limit) => {
   let nPagesToRequest
 
   // Initial request.
-  await _req(type, endpoint).then((response) => {
-    pageData.push(response)
-    pageDataSize = response.per_page
-    currentPage = response.current_page
-    nPagesToRequest = limit ? Math.min(Math.max(Math.ceil(limit / pageDataSize), 1), response.last_page) : response.last_page
-  }).catch((error) => {
+  const initialRequest = await _req(type, endpoint).catch((error) => {
     throw error
   })
 
-  // Subsequent requests for additional data if required.
-  for (let i = currentPage + 1; i <= nPagesToRequest; i++) {
-    pageData.push(_req('get', endpoint + '?page=' + i))
+  pageDataSize = initialRequest.per_page
+  currentPage = initialRequest.current_page
+  nPagesToRequest = limit ? Math.min(Math.max(Math.ceil(Math.abs(limit) / pageDataSize), 1), initialRequest.last_page) : initialRequest.last_page
+
+  if (typeof limit === 'undefined' || limit >= 0) {
+    pageData.push(initialRequest)
+    for (let i = currentPage + 1; i <= nPagesToRequest; i++) {
+      pageData.push(_req('get', endpoint + '?page=' + i))
+    }
+  } else if (limit < 0) {
+    for (let i = initialRequest.last_page; i > initialRequest.last_page - nPagesToRequest; i--) {
+      pageData.push(_req('get', endpoint + '?page=' + i))
+    }
   }
 
   await Promise.all(pageData).then((values) => {
@@ -354,7 +360,9 @@ let _reqMulti = async (type, endpoint, limit) => {
     throw error
   })
 
-  if (returnData.length > limit) returnData = returnData.slice(0, limit)
+  if (returnData.length > Math.abs(limit)) {
+    returnData = limit >= 0 ? returnData.slice(0, limit) : returnData.slice(limit, returnData.length)
+  }
 
   return returnData
 }
