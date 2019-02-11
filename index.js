@@ -7,259 +7,191 @@ const API = '/api/' + VERSION
 
 // Heroes Lounge API Methods.
 const hlAPI = {
-  getBan: async (banID) => {
+  getBan: (banID) => {
     if (!banID) throw Error('Ban ID is not defined')
 
-    return _req('get', Endpoints.BANS(banID)).catch((error) => {
-      throw Error(`Ban with ID ${banID} does not exist \n${error}`)
-    })
+    return _req('get', Endpoints.BANS(banID))
   },
 
-  getBans: async (limit) => {
-    return _reqMulti('get', Endpoints.BANS(), limit).catch((error) => {
-      throw error
-    })
+  getBans: (limit) => {
+    return _reqMulti('get', Endpoints.BANS(), limit)
   },
 
-  getDivision: async (divisionID) => {
+  getDivision: (divisionID) => {
     if (!divisionID) throw Error('Division ID is not defined')
 
-    return _req('get', Endpoints.DIVISIONS(divisionID)).catch((error) => {
-      throw Error(`Division with ID ${divisionID} does not exist \n${error}`)
-    })
+    return _req('get', Endpoints.DIVISIONS(divisionID))
   },
 
-  getDivisions: async (limit) => {
-    return _reqMulti('get', Endpoints.DIVISIONS(), limit).catch((error) => {
-      throw error
-    })
+  getDivisions: (limit) => {
+    return _reqMulti('get', Endpoints.DIVISIONS(), limit)
   },
 
-  getDivisionTeams: async (divisionID) => {
+  getDivisionTeams: (divisionID) => {
     if (!divisionID) throw Error('Division ID is not defined')
 
-    return _req('get', Endpoints.DIVISION_TEAMS(divisionID)).catch((error) => {
-      throw Error(`Teams for division with ID ${divisionID} do not exist \n${error}`)
-    })
+    return _req('get', Endpoints.DIVISION_TEAMS(divisionID))
   },
 
-  getGame: async (gameID) => {
+  getGame: (gameID) => {
     if (!gameID) throw Error('Game ID is not defined')
 
-    return _req('get', Endpoints.GAMES(gameID)).catch((error) => {
-      throw Error(`Game with ID ${gameID} does not exist \n${error}`)
-    })
+    return _req('get', Endpoints.GAMES(gameID))
   },
 
-  getGames: async (limit) => {
-    return _reqMulti('get', Endpoints.GAMES(), limit).catch((error) => {
-      throw error
-    })
+  getGames: (limit) => {
+    return _reqMulti('get', Endpoints.GAMES(), limit)
   },
 
-  getHero: async (heroID) => {
+  getHero: (heroID) => {
     if (!heroID) throw Error('Hero ID is not defined')
 
-    return _req('get', Endpoints.HEROES(heroID)).catch((error) => {
-      throw Error(`Hero with ID ${heroID} does not exist \n${error}`)
-    })
+    return _req('get', Endpoints.HEROES(heroID))
   },
 
-  getHeroes: async (limit) => {
-    return _reqMulti('get', Endpoints.HEROES(), limit).catch((error) => {
-      throw error
-    })
+  getHeroes: (limit) => {
+    return _reqMulti('get', Endpoints.HEROES(), limit)
   },
 
-  getMatch: async (matchID) => {
+  getMatch: (matchID) => {
     if (!matchID) throw Error('Match ID is not defined')
 
-    return _req('get', Endpoints.MATCHES(matchID)).catch((error) => {
-      throw Error(`Match with ID ${matchID} does not exist \n${error}`)
-    })
+    return _req('get', Endpoints.MATCHES(matchID))
   },
 
-  getMatches: async (limit) => {
-    return _reqMulti('get', Endpoints.MATCHES(), limit).catch((error) => {
-      throw error
-    })
+  getMatches: (limit) => {
+    return _reqMulti('get', Endpoints.MATCHES(), limit)
   },
 
-  getMatchesToday: async () => {
-    return _req('get', Endpoints.MATCHES_TODAY()).catch((error) => {
-      throw Error(`Could not get today's matches \n${error}`)
-    })
+  getMatchesToday: () => {
+    return _req('get', Endpoints.MATCHES_TODAY())
   },
 
-  getMatchesWithApprovedCastBetween: async (startDate, endDate) => {
+  getMatchesWithApprovedCastBetween: (startDate, endDate) => {
     if (!startDate || !endDate) throw Error('Date interval is not defined')
     if (!startDate.match(/\d{4}-\d{1,2}-\d{1,2}/g) ||
         !endDate.match(/\d{4}-\d{1,2}-\d{1,2}/g)) throw Error('Invalid date syntax, must be of type: YYYY-MM-DD')
 
-    return _req('get', Endpoints.MATCHES_WITH_APPROVED_CAST_BETWEEN(startDate, endDate)).catch((error) => {
-      throw Error(`Could not get matches with aprroved cast between ${startDate} - ${endDate}\n${error}`)
-    })
+    return _req('get', Endpoints.MATCHES_WITH_APPROVED_CAST_BETWEEN(startDate, endDate))
   },
 
-  getMatchCasters: async (matchID) => {
+  getMatchCasters: (matchID) => {
     if (!matchID) throw Error('Match ID is not defined')
 
-    return _req('get', Endpoints.MATCH_CASTERS(matchID)).catch((error) => {
-      throw Error(`Casters for match with ID ${matchID} do not exist \n${error}`)
-    })
+    return _req('get', Endpoints.MATCH_CASTERS(matchID))
   },
 
-  getMatchGames: async (matchID) => {
+  getMatchGames: (matchID) => {
     if (!matchID) throw Error('Match ID is not defined')
 
-    return _req('get', Endpoints.MATCH_GAMES(matchID)).catch((error) => {
-      throw Error(`Games for match with ID ${matchID} do not exist \n${error}`)
-    })
+    return _req('get', Endpoints.MATCH_GAMES(matchID))
   },
 
-  getMatchReplays: async (matchID) => {
+  getMatchReplays: (matchID) => {
     if (!matchID) throw Error('Match ID is not defined')
 
-    return _req('get', Endpoints.MATCH_REPLAYS(matchID)).catch((error) => {
-      throw Error(`Replays for match with ID ${matchID} do not exist \n${error}`)
-    })
+    return _req('get', Endpoints.MATCH_REPLAYS(matchID))
   },
 
-  getMatchTeams: async (matchID) => {
+  getMatchTeams: (matchID) => {
     if (!matchID) throw Error('Match ID is not defined')
 
-    return _req('get', Endpoints.MATCH_TEAMS(matchID)).catch((error) => {
-      throw Error(`Teams for match with ID ${matchID} do not exist \n${error}`)
-    })
+    return _req('get', Endpoints.MATCH_TEAMS(matchID))
   },
 
-  getPlayoff: async (playoffID) => {
+  getPlayoff: (playoffID) => {
     if (!playoffID) throw Error('Playoff ID is not defined')
 
-    return _req('get', Endpoints.PLAYOFFS(playoffID)).catch((error) => {
-      throw Error(`Playoff with ID ${playoffID} does not exist \n${error}`)
-    })
+    return _req('get', Endpoints.PLAYOFFS(playoffID))
   },
 
-  getPlayoffs: async (limit) => {
-    return _reqMulti('get', Endpoints.PLAYOFFS(), limit).catch((error) => {
-      throw error
-    })
+  getPlayoffs: (limit) => {
+    return _reqMulti('get', Endpoints.PLAYOFFS(), limit)
   },
 
-  getPlayoffDivisions: async (playoffID) => {
+  getPlayoffDivisions: (playoffID) => {
     if (!playoffID) throw Error('Playoff ID is not defined')
 
-    return _req('get', Endpoints.PLAYOFF_DIVISIONS(playoffID)).catch((error) => {
-      throw Error(`Divisions for playoff with ID ${playoffID} do not exist \n${error}`)
-    })
+    return _req('get', Endpoints.PLAYOFF_DIVISIONS(playoffID))
   },
 
-  getPlayoffMatches: async (playoffID) => {
+  getPlayoffMatches: (playoffID) => {
     if (!playoffID) throw Error('Playoff ID is not defined')
 
-    return _req('get', Endpoints.PLAYOFF_MATCHES(playoffID)).catch((error) => {
-      throw Error(`Matches for playoff with ID ${playoffID} do not exist \n${error}`)
-    })
+    return _req('get', Endpoints.PLAYOFF_MATCHES(playoffID))
   },
 
-  getSeasonCasterStatistics: async (seasonID) => {
+  getSeasonCasterStatistics: (seasonID) => {
     if (!seasonID) throw Error('Season ID is not defined')
 
-    return _req('get', Endpoints.SEASON_CASTER_STATISTICS(seasonID)).catch((error) => {
-      throw Error(`Season with ID ${seasonID} does not exist \n${error}`)
-    })
+    return _req('get', Endpoints.SEASON_CASTER_STATISTICS(seasonID))
   },
 
-  getSeason: async (seasonID) => {
+  getSeason: (seasonID) => {
     if (!seasonID) throw Error('Season ID is not defined')
 
-    return _req('get', Endpoints.SEASONS(seasonID)).catch((error) => {
-      throw Error(`Season with ID ${seasonID} does not exist \n${error}`)
-    })
+    return _req('get', Endpoints.SEASONS(seasonID))
   },
 
-  getSeasons: async (limit) => {
-    return _reqMulti('get', Endpoints.SEASONS(), limit).catch((error) => {
-      throw error
-    })
+  getSeasons: (limit) => {
+    return _reqMulti('get', Endpoints.SEASONS(), limit)
   },
 
-  getSeasondivisions: async (seasonID) => {
+  getSeasondivisions: (seasonID) => {
     if (!seasonID) throw Error('Season ID is not defined')
 
-    return _req('get', Endpoints.SEASON_DIVISIONS(seasonID)).catch((error) => {
-      throw Error(`Divisions for season with ID ${seasonID} do not exist \n${error}`)
-    })
+    return _req('get', Endpoints.SEASON_DIVISIONS(seasonID))
   },
 
-  getSeasonPlayoffs: async (seasonID) => {
+  getSeasonPlayoffs: (seasonID) => {
     if (!seasonID) throw Error('Season ID is not defined')
 
-    return _req('get', Endpoints.SEASON_PLAYOFFS(seasonID)).catch((error) => {
-      throw Error(`Playoffs for season with ID ${seasonID} do not exist \n${error}`)
-    })
+    return _req('get', Endpoints.SEASON_PLAYOFFS(seasonID))
   },
 
-  getSeasonTeams: async (seasonID) => {
+  getSeasonTeams: (seasonID) => {
     if (!seasonID) throw Error('Season ID is not defined')
 
-    return _req('get', Endpoints.SEASON_TEAMS(seasonID)).catch((error) => {
-      throw Error(`Teams for season with ID ${seasonID} do not exist \n${error}`)
-    })
+    return _req('get', Endpoints.SEASON_TEAMS(seasonID))
   },
 
-  getSloth: async (slothID) => {
+  getSloth: (slothID) => {
     if (!slothID) throw Error('Sloth ID is not defined')
 
-    return _req('get', Endpoints.SLOTHS(slothID)).catch((error) => {
-      throw Error(`Sloth with ID ${slothID} does not exist \n${error}`)
-    })
+    return _req('get', Endpoints.SLOTHS(slothID))
   },
 
-  getSloths: async (limit) => {
-    return _reqMulti('get', Endpoints.SLOTHS(), limit).catch((error) => {
-      throw error
-    })
+  getSloths: (limit) => {
+    return _reqMulti('get', Endpoints.SLOTHS(), limit)
   },
 
-  getSlothByDiscordId: async (discordID) => {
+  getSlothByDiscordId: (discordID) => {
     if (!discordID) throw Error('Discord ID is not defined')
 
-    return _req('get', Endpoints.SLOTH_DISCORD_ID(discordID)).catch((error) => {
-      throw Error(`Sloth with Discord ID ${discordID} does not exist \n${error}`)
-    })
+    return _req('get', Endpoints.SLOTH_DISCORD_ID(discordID))
   },
 
-  getTalent: async (talentID) => {
+  getTalent: (talentID) => {
     if (!talentID) throw Error('Talent ID is not defined')
 
-    return _req('get', Endpoints.TALENTS(talentID)).catch((error) => {
-      throw Error(`Talent with ID ${talentID} does not exist \n${error}`)
-    })
+    return _req('get', Endpoints.TALENTS(talentID))
   },
 
-  getTalents: async (limit) => {
-    return _reqMulti('get', Endpoints.TALENTS(), limit).catch((error) => {
-      throw error
-    })
+  getTalents: (limit) => {
+    return _reqMulti('get', Endpoints.TALENTS(), limit)
   },
 
-  getTeam: async (teamID) => {
+  getTeam: (teamID) => {
     if (!teamID) throw Error('Team ID is not defined')
 
-    return _req('get', Endpoints.TEAMS(teamID)).catch((error) => {
-      throw Error(`Team with ID ${teamID} does not exist \n${error}`)
-    })
+    return _req('get', Endpoints.TEAMS(teamID))
   },
 
-  getTeams: async (limit) => {
-    return _reqMulti('get', Endpoints.TEAMS(), limit).catch((error) => {
-      throw error
-    })
+  getTeams: (limit) => {
+    return _reqMulti('get', Endpoints.TEAMS(), limit)
   },
 
-  getTeamLogo: async (teamID) => {
+  getTeamLogo: (teamID) => {
     if (!teamID) throw Error('Team ID is not defined')
 
     return _req('get', Endpoints.TEAM_LOGO(teamID)).catch((error) => {
@@ -272,42 +204,32 @@ const hlAPI = {
     })
   },
 
-  getTeamMatches: async (teamID) => {
+  getTeamMatches: (teamID) => {
     if (!teamID) throw Error('Team ID is not defined')
 
-    return _req('get', Endpoints.TEAM_MATCHES(teamID)).catch((error) => {
-      throw Error(`Matches for team with ID ${teamID} do not exist \n${error}`)
-    })
+    return _req('get', Endpoints.TEAM_MATCHES(teamID))
   },
 
-  getTeamSloths: async (teamID) => {
+  getTeamSloths: (teamID) => {
     if (!teamID) throw Error('Team ID is not defined')
 
-    return _req('get', Endpoints.TEAM_SLOTHS(teamID)).catch((error) => {
-      throw Error(`Sloths for team with ID ${teamID} do not exist \n${error}`)
-    })
+    return _req('get', Endpoints.TEAM_SLOTHS(teamID))
   },
 
-  getTeamTimelineEntries: async (teamID) => {
+  getTeamTimelineEntries: (teamID) => {
     if (!teamID) throw Error('Team ID is not defined')
 
-    return _req('get', Endpoints.TEAM_TIMELINE(teamID)).catch((error) => {
-      throw Error(`Timeline for team with ID ${teamID} does not exist \n${error}`)
-    })
+    return _req('get', Endpoints.TEAM_TIMELINE(teamID))
   },
 
-  getTwitchChannel: async (channelID) => {
+  getTwitchChannel: (channelID) => {
     if (!channelID) throw Error('Channel ID is not defined')
 
-    return _req('get', Endpoints.TWITCH_CHANNELS(channelID)).catch((error) => {
-      throw Error(`Twitch channel with ID ${channelID} does not exist \n${error}`)
-    })
+    return _req('get', Endpoints.TWITCH_CHANNELS(channelID))
   },
 
-  getTwitchChannels: async (limit) => {
-    return _reqMulti('get', Endpoints.TWITCH_CHANNELS(), limit).catch((error) => {
-      throw error
-    })
+  getTwitchChannels: (limit) => {
+    return _reqMulti('get', Endpoints.TWITCH_CHANNELS(), limit)
   }
 }
 
@@ -421,9 +343,9 @@ let makeRequest = (options) => {
             reject(Error('Parse JSON response'))
           }
         } else if (res.statusCode === 400) {
-          reject(Error(`Status Code ${res.statusCode} : Value does not exist`))
+          reject(Error(`Status Code ${res.statusCode}: Value for ${options.path} does not exist`))
         } else {
-          reject(Error(`status Code ${res.statusCode} : Invalid request`))
+          reject(Error(`status Code ${res.statusCode}: Invalid request for ${options.path}`))
         }
       })
     })
