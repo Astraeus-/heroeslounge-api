@@ -63,8 +63,15 @@ const hlAPI = {
     return _reqMulti('get', Endpoints.MATCHES(), limit)
   },
 
-  getMatchesToday: () => {
-    return _req('get', Endpoints.MATCHES_TODAY())
+  getMatchesToday: (tz1, tz2) => {
+    return _req('get', Endpoints.MATCHES_TODAY(tz1, tz2))
+  },
+
+  getMatchesForDate: (date, tz1, tz2) => {
+    if (!date) throw Error('Date is not defined')
+    if (!date.match(/\d{4}-\d{1,2}-\d{1,2}/g)) throw Error('Invalid date syntax, must be of type: YYYY-MM-DD')
+
+    return _req('get', Endpoints.MATCHES_FOR_DATE(date, tz1, tz2))
   },
 
   getMatchesWithApprovedCastBetween: (startDate, endDate) => {
@@ -73,6 +80,12 @@ const hlAPI = {
         !endDate.match(/\d{4}-\d{1,2}-\d{1,2}/g)) throw Error('Invalid date syntax, must be of type: YYYY-MM-DD')
 
     return _req('get', Endpoints.MATCHES_WITH_APPROVED_CAST_BETWEEN(startDate, endDate))
+  },
+
+  getMatchChannels: (matchID) => {
+    if (!matchID) throw Error('Match ID is not defined')
+
+    return _req('get', Endpoints.MATCH_CHANNELS(matchID))
   },
 
   getMatchCasters: (matchID) => {
@@ -405,20 +418,26 @@ const Endpoints = {
   MATCHES: (matchID) => {
     return `${API}/matches${matchID ? `/${matchID}` : ''}`
   },
+  MATCHES_FOR_DATE: (date, tz1, tz2) => {
+    return `${API}/matches/forDate/${date}${tz1 ? `/${tz1}${tz2 ? `/${tz2}` : ''}` : ''}`
+  },
   MATCHES_WITH_APPROVED_CAST_BETWEEN: (startDate, endDate) => {
     return `${API}/matches/withApprovedCastBetween/${startDate}/${endDate}`
   },
   MATCHES_ALL: () => {
     return `${Endpoints.MATCHES()}All`
   },
-  MATCHES_TODAY: () => {
-    return `${Endpoints.MATCHES()}/today`
+  MATCHES_TODAY: (tz1, tz2) => {
+    return `${Endpoints.MATCHES()}/today${tz1 ? `/${tz1}${tz2 ? `/${tz2}` : ''}` : ''}`
   },
   MATCH_TEAMS: (matchID) => {
     return `${Endpoints.MATCHES(matchID)}/teams`
   },
   MATCH_CASTERS: (matchID) => {
     return `${Endpoints.MATCHES(matchID)}/caster`
+  },
+  MATCH_CHANNELS: (matchID) => {
+    return `${Endpoints.MATCHES(matchID)}/channels`
   },
   MATCH_GAMES: (matchID) => {
     return `${Endpoints.MATCHES(matchID)}/games`
