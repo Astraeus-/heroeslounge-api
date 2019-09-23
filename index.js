@@ -27,6 +27,37 @@ const hlAPI = {
     return _reqMulti('get', Endpoints.DIVISIONS(), limit)
   },
 
+  getDivisionHerostats: (divisionID) => {
+    if (!divisionID) throw Error('Division ID is not defined')
+
+    return _req('get', Endpoints.DIVISION_HEROSTATS(divisionID))
+  },
+
+  getDivisionMatches: (divisionID) => {
+    if (!divisionID) throw Error('Division ID is not defined')
+
+    return _req('get', Endpoints.DIVISION_MATCHES(divisionID))
+  },
+
+  getDivisionRecentresults: (divisionID) => {
+    if (!divisionID) throw Error('Division ID is not defined')
+
+    return _req('get', Endpoints.DIVISION_RECENTRESULTS(divisionID))
+  },
+
+  getDivisionStandings: (divisionID) => {
+    if (!divisionID) throw Error('Division ID is not defined')
+
+    return _req('get', Endpoints.DIVISION_STANDINGS(divisionID))
+  },
+
+  getDivisionStandingsTeam: (divisionID, teamID) => {
+    if (!divisionID) throw Error('Division ID is not defined')
+    if (!teamID) throw Error('Team ID is not defined')
+
+    return _req('get', Endpoints.DIVISION_STANDINGS_TEAM(divisionID, teamID))
+  },
+
   getDivisionTeams: (divisionID) => {
     if (!divisionID) throw Error('Division ID is not defined')
 
@@ -134,6 +165,16 @@ const hlAPI = {
     return _req('get', Endpoints.PLAYOFF_MATCHES(playoffID))
   },
 
+  getRole: (roleID) => {
+    if (!roleID) throw Error('Role ID is not defined')
+
+    return _req('get', Endpoints.ROLES(roleID))
+  },
+
+  getRoles: (limit) => {
+    return _reqMulti('get', Endpoints.ROLES(), limit)
+  },
+
   getSeasonCasterStatistics: (seasonID) => {
     if (!seasonID) throw Error('Season ID is not defined')
 
@@ -182,6 +223,19 @@ const hlAPI = {
     if (!discordID) throw Error('Discord ID is not defined')
 
     return _req('get', Endpoints.SLOTH_DISCORD_ID(discordID))
+  },
+
+  getSlothHerostats: (slothID) => {
+    if (!slothID) throw Error('Sloth ID is not defined')
+
+    return _req('get', Endpoints.SLOTHS_HEROSTATS(slothID))
+  },
+
+  getSlothHerostatsSeason: (slothID, seasonID) => {
+    if (!slothID) throw Error('Sloth ID is not defined')
+    if (!seasonID) throw Error('Season ID is not defined')
+
+    return _req('get', Endpoints.SLOTHS_HEROSTATS_SEASON(slothID, seasonID))
   },
 
   getTalent: (talentID) => {
@@ -394,6 +448,21 @@ const Endpoints = {
   DIVISIONS_ALL: () => {
     return `${Endpoints.DIVISIONS()}All`
   },
+  DIVISION_HEROSTATS: (divisionID) => {
+    return `${Endpoints.DIVISIONS(divisionID)}/herostatistics`
+  },
+  DIVISION_MATCHES: (divisionID) => {
+    return `${Endpoints.DIVISIONS(divisionID)}/matches`
+  },
+  DIVISION_RECENTRESULTS: (divisionID) => {
+    return `${Endpoints.DIVISIONS(divisionID)}/recentresults`
+  },
+  DIVISION_STANDINGS: (divisionID) => {
+    return `${Endpoints.DIVISIONS(divisionID)}/standings`
+  },
+  DIVISION_STANDINGS_TEAM: (divisionID, teamID) => {
+    return `${Endpoints.DIVISIONS(divisionID)}/standings/${teamID}`
+  },
   DIVISION_TEAMS: (divisionID) => {
     return `${Endpoints.DIVISIONS(divisionID)}/teams`
   },
@@ -459,6 +528,10 @@ const Endpoints = {
     return `${Endpoints.PLAYOFFS(playoffID)}/matches`
   },
 
+  ROLES: (roleID) => {
+    return `${API}/roles${roleID ? `/${roleID}` : ''}`
+  },
+
   SEASONS: (seasonID) => {
     return `${API}/seasons${seasonID ? `/${seasonID}` : ''}`
   },
@@ -486,6 +559,12 @@ const Endpoints = {
   },
   SLOTHS_ALL: () => {
     return `${Endpoints.SLOTHS()}All`
+  },
+  SLOTHS_HEROSTATS: (slothID) => {
+    return `${Endpoints.SLOTHS(slothID)}/herostatistics`
+  },
+  SLOTHS_HEROSTATS_SEASON: (slothID, seasonID) => {
+    return `${Endpoints.SLOTHS(slothID)}/season/${seasonID}/herostatistics`
   },
 
   TALENTS: (talentID) => {
