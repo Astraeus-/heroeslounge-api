@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node test.js",
-    "test": "standard",
-    "fix": "standard --fix"
+    "test": "eslint .",
+    "fix": "eslint . --fix"
   },
   "author": "Astraeus-",
   "bugs": {
@@ -18,6 +18,6 @@
     "node": ">=8.7.0"
   },
   "devDependencies": {
-    "standard": "^12.0.1"
+    "eslint": "^6.4.0"
   }
 }
