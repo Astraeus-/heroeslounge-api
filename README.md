@@ -13,5 +13,7 @@ Install the `heroeslounge-api` package from the NPM repository.
 npm install heroeslounge-api --save
 ```
 
-### Examples
-A list of examples can be found in the examples folder.
+### Requests
+Requests for arrays of data can accept a limit variable.
+This limit can be positive if you want to start from 0 or
+negative if you want to start from the end.
