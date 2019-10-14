@@ -1,9 +1,3 @@
-/* Heroes Lounge API Information */
-const VERSION = 'v1';
-
-module.exports.BASEURL = 'heroeslounge.gg';
-module.exports.API = `/api/${VERSION}`;
-
 /* Heroes Lounge Endpoints. */
 module.exports.BANS = (banID) => {
   return `/bans${banID ? `/${banID}` : ''}`;

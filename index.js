@@ -1,6 +1,5 @@
-// Heroes Lounge API.
-const _HTTPS = require('https');
-const Endpoints = require('./Endpoints.js');
+const handler = require('./rest/RequestHandler.js');
+const endpoints = require('./rest/endpoints.js');
 
 /* Heroes Lounge API Methods. */
 const hlAPI = {
@@ -12,7 +11,7 @@ const hlAPI = {
   getBan: (banID) => {
     if (!banID) throw Error('Ban ID is not defined');
 
-    return _req('get', Endpoints.BANS(banID));
+    return handler.request('get', endpoints.BANS(banID));
   },
 
   /**
@@ -21,7 +20,7 @@ const hlAPI = {
    * @returns {Promise<object[]>} An array of ban objects.
    */
   getBans: (limit) => {
-    return _reqMulti('get', Endpoints.BANS(), limit);
+    return handler.reqMulti('get', endpoints.BANS(), limit);
   },
 
   /**
@@ -32,7 +31,7 @@ const hlAPI = {
   getDivision: (divisionID) => {
     if (!divisionID) throw Error('Division ID is not defined');
 
-    return _req('get', Endpoints.DIVISIONS(divisionID));
+    return handler.request('get', endpoints.DIVISIONS(divisionID));
   },
 
   /**
@@ -41,7 +40,7 @@ const hlAPI = {
    * @returns {Promise<object[]>} An array of division objects.
    */
   getDivisions: (limit) => {
-    return _reqMulti('get', Endpoints.DIVISIONS(), limit);
+    return handler.reqMulti('get', endpoints.DIVISIONS(), limit);
   },
 
   /**
@@ -52,7 +51,7 @@ const hlAPI = {
   getDivisionHerostats: (divisionID) => {
     if (!divisionID) throw Error('Division ID is not defined');
 
-    return _req('get', Endpoints.DIVISION_HEROSTATS(divisionID));
+    return handler.request('get', endpoints.DIVISION_HEROSTATS(divisionID));
   },
 
   /**
@@ -63,7 +62,7 @@ const hlAPI = {
   getDivisionMatches: (divisionID) => {
     if (!divisionID) throw Error('Division ID is not defined');
 
-    return _req('get', Endpoints.DIVISION_MATCHES(divisionID));
+    return handler.request('get', endpoints.DIVISION_MATCHES(divisionID));
   },
 
   /**
@@ -74,7 +73,7 @@ const hlAPI = {
   getDivisionRecentresults: (divisionID) => {
     if (!divisionID) throw Error('Division ID is not defined');
 
-    return _req('get', Endpoints.DIVISION_RECENTRESULTS(divisionID));
+    return handler.request('get', endpoints.DIVISION_RECENTRESULTS(divisionID));
   },
 
   /**
@@ -85,7 +84,7 @@ const hlAPI = {
   getDivisionStandings: (divisionID) => {
     if (!divisionID) throw Error('Division ID is not defined');
 
-    return _req('get', Endpoints.DIVISION_STANDINGS(divisionID));
+    return handler.request('get', endpoints.DIVISION_STANDINGS(divisionID));
   },
 
   /**
@@ -98,7 +97,7 @@ const hlAPI = {
     if (!divisionID) throw Error('Division ID is not defined');
     if (!teamID) throw Error('Team ID is not defined');
 
-    return _req('get', Endpoints.DIVISION_STANDINGS_TEAM(divisionID, teamID));
+    return handler.request('get', endpoints.DIVISION_STANDINGS_TEAM(divisionID, teamID));
   },
 
   /**
@@ -109,7 +108,7 @@ const hlAPI = {
   getDivisionTeams: (divisionID) => {
     if (!divisionID) throw Error('Division ID is not defined');
 
-    return _req('get', Endpoints.DIVISION_TEAMS(divisionID));
+    return handler.request('get', endpoints.DIVISION_TEAMS(divisionID));
   },
 
   /**
@@ -120,7 +119,7 @@ const hlAPI = {
   getGame: (gameID) => {
     if (!gameID) throw Error('Game ID is not defined');
 
-    return _req('get', Endpoints.GAMES(gameID));
+    return handler.request('get', endpoints.GAMES(gameID));
   },
 
   /**
@@ -129,7 +128,7 @@ const hlAPI = {
    * @returns {Promise<object[]>} An array of game objects.
    */
   getGames: (limit) => {
-    return _reqMulti('get', Endpoints.GAMES(), limit);
+    return handler.reqMulti('get', endpoints.GAMES(), limit);
   },
 
   /**
@@ -140,7 +139,7 @@ const hlAPI = {
   getHero: (heroID) => {
     if (!heroID) throw Error('Hero ID is not defined');
 
-    return _req('get', Endpoints.HEROES(heroID));
+    return handler.request('get', endpoints.HEROES(heroID));
   },
 
   /**
@@ -149,7 +148,7 @@ const hlAPI = {
    * @returns {Promise<object[]>} An array of hero objects.
    */
   getHeroes: (limit) => {
-    return _reqMulti('get', Endpoints.HEROES(), limit);
+    return handler.reqMulti('get', endpoints.HEROES(), limit);
   },
 
   /**
@@ -160,7 +159,7 @@ const hlAPI = {
   getMatch: (matchID) => {
     if (!matchID) throw Error('Match ID is not defined');
 
-    return _req('get', Endpoints.MATCHES(matchID));
+    return handler.request('get', endpoints.MATCHES(matchID));
   },
 
   /**
@@ -169,7 +168,7 @@ const hlAPI = {
    * @returns {Promise<object[]>} An array of match objects.
    */
   getMatches: (limit) => {
-    return _reqMulti('get', Endpoints.MATCHES(), limit);
+    return handler.reqMulti('get', endpoints.MATCHES(), limit);
   },
 
   /**
@@ -179,7 +178,7 @@ const hlAPI = {
    * @returns {Promise<object[]>} An array of match objects.
    */
   getMatchesToday: (tz1, tz2) => {
-    return _req('get', Endpoints.MATCHES_TODAY(tz1, tz2));
+    return handler.request('get', endpoints.MATCHES_TODAY(tz1, tz2));
   },
 
   /**
@@ -193,7 +192,7 @@ const hlAPI = {
     if (!date) throw Error('Date is not defined');
     if (!date.match(/\d{4}-\d{1,2}-\d{1,2}/g)) throw Error('Invalid date syntax, must be of type: YYYY-MM-DD');
 
-    return _req('get', Endpoints.MATCHES_FOR_DATE(date, tz1, tz2));
+    return handler.request('get', endpoints.MATCHES_FOR_DATE(date, tz1, tz2));
   },
 
   /**
@@ -207,7 +206,7 @@ const hlAPI = {
     if (!startDate.match(/\d{4}-\d{1,2}-\d{1,2}/g) ||
         !endDate.match(/\d{4}-\d{1,2}-\d{1,2}/g)) throw Error('Invalid date syntax, must be of type: YYYY-MM-DD');
 
-    return _req('get', Endpoints.MATCHES_WITH_APPROVED_CAST_BETWEEN(startDate, endDate));
+    return handler.request('get', endpoints.MATCHES_WITH_APPROVED_CAST_BETWEEN(startDate, endDate));
   },
 
   /**
@@ -218,7 +217,7 @@ const hlAPI = {
   getMatchChannels: (matchID) => {
     if (!matchID) throw Error('Match ID is not defined');
 
-    return _req('get', Endpoints.MATCH_CHANNELS(matchID));
+    return handler.request('get', endpoints.MATCH_CHANNELS(matchID));
   },
 
   /**
@@ -229,7 +228,7 @@ const hlAPI = {
   getMatchCasters: (matchID) => {
     if (!matchID) throw Error('Match ID is not defined');
 
-    return _req('get', Endpoints.MATCH_CASTERS(matchID));
+    return handler.request('get', endpoints.MATCH_CASTERS(matchID));
   },
 
   /**
@@ -240,7 +239,7 @@ const hlAPI = {
   getMatchGames: (matchID) => {
     if (!matchID) throw Error('Match ID is not defined');
 
-    return _req('get', Endpoints.MATCH_GAMES(matchID));
+    return handler.request('get', endpoints.MATCH_GAMES(matchID));
   },
 
   /**
@@ -251,7 +250,7 @@ const hlAPI = {
   getMatchReplays: (matchID) => {
     if (!matchID) throw Error('Match ID is not defined');
 
-    return _req('get', Endpoints.MATCH_REPLAYS(matchID));
+    return handler.request('get', endpoints.MATCH_REPLAYS(matchID));
   },
 
   /**
@@ -262,7 +261,7 @@ const hlAPI = {
   getMatchTeams: (matchID) => {
     if (!matchID) throw Error('Match ID is not defined');
 
-    return _req('get', Endpoints.MATCH_TEAMS(matchID));
+    return handler.request('get', endpoints.MATCH_TEAMS(matchID));
   },
 
   /**
@@ -273,7 +272,7 @@ const hlAPI = {
   getPlayoff: (playoffID) => {
     if (!playoffID) throw Error('Playoff ID is not defined');
 
-    return _req('get', Endpoints.PLAYOFFS(playoffID));
+    return handler.request('get', endpoints.PLAYOFFS(playoffID));
   },
 
   /**
@@ -282,7 +281,7 @@ const hlAPI = {
    * @returns {Promise<object[]>} An array of playoff objects.
    */
   getPlayoffs: (limit) => {
-    return _reqMulti('get', Endpoints.PLAYOFFS(), limit);
+    return handler.reqMulti('get', endpoints.PLAYOFFS(), limit);
   },
 
   /**
@@ -293,7 +292,7 @@ const hlAPI = {
   getPlayoffDivisions: (playoffID) => {
     if (!playoffID) throw Error('Playoff ID is not defined');
 
-    return _req('get', Endpoints.PLAYOFF_DIVISIONS(playoffID));
+    return handler.request('get', endpoints.PLAYOFF_DIVISIONS(playoffID));
   },
 
   /**
@@ -304,7 +303,7 @@ const hlAPI = {
   getPlayoffMatches: (playoffID) => {
     if (!playoffID) throw Error('Playoff ID is not defined');
 
-    return _req('get', Endpoints.PLAYOFF_MATCHES(playoffID));
+    return handler.request('get', endpoints.PLAYOFF_MATCHES(playoffID));
   },
 
   /**
@@ -315,7 +314,7 @@ const hlAPI = {
   getRole: (roleID) => {
     if (!roleID) throw Error('Role ID is not defined');
 
-    return _req('get', Endpoints.ROLES(roleID));
+    return handler.request('get', endpoints.ROLES(roleID));
   },
 
   /**
@@ -324,7 +323,7 @@ const hlAPI = {
    * @returns {Promise<object[]>} An array of role objects.
    */
   getRoles: (limit) => {
-    return _reqMulti('get', Endpoints.ROLES(), limit);
+    return handler.reqMulti('get', endpoints.ROLES(), limit);
   },
 
   /**
@@ -335,7 +334,7 @@ const hlAPI = {
   getSeasonCasterStatistics: (seasonID) => {
     if (!seasonID) throw Error('Season ID is not defined');
 
-    return _req('get', Endpoints.SEASON_CASTER_STATISTICS(seasonID));
+    return handler.request('get', endpoints.SEASON_CASTER_STATISTICS(seasonID));
   },
 
   /**
@@ -346,7 +345,7 @@ const hlAPI = {
   getSeason: (seasonID) => {
     if (!seasonID) throw Error('Season ID is not defined');
 
-    return _req('get', Endpoints.SEASONS(seasonID));
+    return handler.request('get', endpoints.SEASONS(seasonID));
   },
 
   /**
@@ -355,7 +354,7 @@ const hlAPI = {
    * @returns {Promise<object[]>} An array of season objects.
    */
   getSeasons: (limit) => {
-    return _reqMulti('get', Endpoints.SEASONS(), limit);
+    return handler.reqMulti('get', endpoints.SEASONS(), limit);
   },
 
   /**
@@ -366,7 +365,7 @@ const hlAPI = {
   getSeasondivisions: (seasonID) => {
     if (!seasonID) throw Error('Season ID is not defined');
 
-    return _req('get', Endpoints.SEASON_DIVISIONS(seasonID));
+    return handler.request('get', endpoints.SEASON_DIVISIONS(seasonID));
   },
 
   /**
@@ -377,7 +376,7 @@ const hlAPI = {
   getSeasonPlayoffs: (seasonID) => {
     if (!seasonID) throw Error('Season ID is not defined');
 
-    return _req('get', Endpoints.SEASON_PLAYOFFS(seasonID));
+    return handler.request('get', endpoints.SEASON_PLAYOFFS(seasonID));
   },
 
   /**
@@ -388,7 +387,7 @@ const hlAPI = {
   getSeasonTeams: (seasonID) => {
     if (!seasonID) throw Error('Season ID is not defined');
 
-    return _req('get', Endpoints.SEASON_TEAMS(seasonID));
+    return handler.request('get', endpoints.SEASON_TEAMS(seasonID));
   },
 
   /**
@@ -399,7 +398,7 @@ const hlAPI = {
   getSloth: (slothID) => {
     if (!slothID) throw Error('Sloth ID is not defined');
 
-    return _req('get', Endpoints.SLOTHS(slothID));
+    return handler.request('get', endpoints.SLOTHS(slothID));
   },
 
   /**
@@ -408,7 +407,7 @@ const hlAPI = {
    * @returns {Promise<object[]>} An array of sloth objects.
    */
   getSloths: (limit) => {
-    return _reqMulti('get', Endpoints.SLOTHS(), limit);
+    return handler.reqMulti('get', endpoints.SLOTHS(), limit);
   },
 
   /**
@@ -419,7 +418,7 @@ const hlAPI = {
   getSlothByDiscordId: (discordID) => {
     if (!discordID) throw Error('Discord ID is not defined');
 
-    return _req('get', Endpoints.SLOTH_DISCORD_ID(discordID));
+    return handler.request('get', endpoints.SLOTH_DISCORD_ID(discordID));
   },
 
   /**
@@ -430,7 +429,7 @@ const hlAPI = {
   getSlothHerostats: (slothID) => {
     if (!slothID) throw Error('Sloth ID is not defined');
 
-    return _req('get', Endpoints.SLOTHS_HEROSTATS(slothID));
+    return handler.request('get', endpoints.SLOTHS_HEROSTATS(slothID));
   },
 
   /**
@@ -443,7 +442,7 @@ const hlAPI = {
     if (!slothID) throw Error('Sloth ID is not defined');
     if (!seasonID) throw Error('Season ID is not defined');
 
-    return _req('get', Endpoints.SLOTHS_HEROSTATS_SEASON(slothID, seasonID));
+    return handler.request('get', endpoints.SLOTHS_HEROSTATS_SEASON(slothID, seasonID));
   },
 
   /**
@@ -454,7 +453,7 @@ const hlAPI = {
   getTalent: (talentID) => {
     if (!talentID) throw Error('Talent ID is not defined');
 
-    return _req('get', Endpoints.TALENTS(talentID));
+    return handler.request('get', endpoints.TALENTS(talentID));
   },
 
   /**
@@ -463,7 +462,7 @@ const hlAPI = {
    * @returns {Promise<object[]>} An array of talent objects.
    */
   getTalents: (limit) => {
-    return _reqMulti('get', Endpoints.TALENTS(), limit);
+    return handler.reqMulti('get', endpoints.TALENTS(), limit);
   },
 
   /**
@@ -474,7 +473,7 @@ const hlAPI = {
   getTeam: (teamID) => {
     if (!teamID) throw Error('Team ID is not defined');
 
-    return _req('get', Endpoints.TEAMS(teamID));
+    return handler.request('get', endpoints.TEAMS(teamID));
   },
 
   /**
@@ -483,7 +482,7 @@ const hlAPI = {
    * @returns {Promise<object[]>} An array of team objects.
    */
   getTeams: (limit) => {
-    return _reqMulti('get', Endpoints.TEAMS(), limit);
+    return handler.reqMulti('get', endpoints.TEAMS(), limit);
   },
 
   /**
@@ -494,7 +493,7 @@ const hlAPI = {
   getTeamLogo: (teamID) => {
     if (!teamID) throw Error('Team ID is not defined');
 
-    return _req('get', Endpoints.TEAM_LOGO(teamID)).catch((error) => {
+    return handler.request('get', endpoints.TEAM_LOGO(teamID)).catch((error) => {
       if (error.message === 'Parse JSON response') {
         // console.log(`Team with ID ${teamID} does not have a custom logo`)
         return {};
@@ -512,7 +511,7 @@ const hlAPI = {
   getTeamMatches: (teamID) => {
     if (!teamID) throw Error('Team ID is not defined');
 
-    return _req('get', Endpoints.TEAM_MATCHES(teamID));
+    return handler.request('get', endpoints.TEAM_MATCHES(teamID));
   },
 
   /**
@@ -523,7 +522,7 @@ const hlAPI = {
   getTeamSloths: (teamID) => {
     if (!teamID) throw Error('Team ID is not defined');
 
-    return _req('get', Endpoints.TEAM_SLOTHS(teamID));
+    return handler.request('get', endpoints.TEAM_SLOTHS(teamID));
   },
 
   /**
@@ -534,7 +533,7 @@ const hlAPI = {
   getTeamTimelineEntries: (teamID) => {
     if (!teamID) throw Error('Team ID is not defined');
 
-    return _req('get', Endpoints.TEAM_TIMELINE(teamID));
+    return handler.request('get', endpoints.TEAM_TIMELINE(teamID));
   },
 
   /**
@@ -545,7 +544,7 @@ const hlAPI = {
   getTwitchChannel: (channelID) => {
     if (!channelID) throw Error('Channel ID is not defined');
 
-    return _req('get', Endpoints.TWITCH_CHANNELS(channelID));
+    return handler.request('get', endpoints.TWITCH_CHANNELS(channelID));
   },
 
   /**
@@ -554,140 +553,8 @@ const hlAPI = {
    * @returns {Promise<object[]>} An array of channel objects.
    */
   getTwitchChannels: (limit) => {
-    return _reqMulti('get', Endpoints.TWITCH_CHANNELS(), limit);
+    return handler.reqMulti('get', endpoints.TWITCH_CHANNELS(), limit);
   }
-};
-
-/*
-
-Rate-Limit tracking
-
-*/
-
-let rateLimitInterval = 100;
-let lastRequestTime = Date.now() - rateLimitInterval; // Initialize to allow instant request at start up.
-let requestQueue = [];
-
-let _reqMulti = async (type, endpoint, limit) => {
-  if (typeof limit !== 'undefined' && typeof limit !== 'number') throw TypeError('limit is not of type number');
-  if (limit === 0) return [];
-
-  let returnData = [];
-  let pageData = [];
-  let pageDataSize;
-  let currentPage;
-
-  let nPagesToRequest;
-
-  // Initial request.
-  const initialRequest = await _req(type, endpoint).catch((error) => {
-    throw error;
-  });
-
-  pageDataSize = initialRequest.per_page;
-  currentPage = initialRequest.current_page;
-  nPagesToRequest = limit ? Math.min(Math.max(Math.ceil(Math.abs(limit) / pageDataSize), 1), initialRequest.last_page) : initialRequest.last_page;
-
-  if (typeof limit === 'undefined' || limit >= 0) {
-    pageData.push(initialRequest);
-    for (let i = currentPage + 1; i <= nPagesToRequest; i++) {
-      pageData.push(_req('get', endpoint + '?page=' + i));
-    }
-  } else if (limit < 0) {
-    for (let i = initialRequest.last_page; i > initialRequest.last_page - nPagesToRequest; i--) {
-      pageData.push(_req('get', endpoint + '?page=' + i));
-    }
-  }
-
-  await Promise.all(pageData).then((values) => {
-    values.forEach((value) => {
-      returnData = returnData.concat(value.data);
-    });
-  }).catch((error) => {
-    throw error;
-  });
-
-  if (returnData.length > Math.abs(limit)) {
-    returnData = limit >= 0 ? returnData.slice(0, limit) : returnData.slice(limit, returnData.length);
-  }
-
-  return returnData;
-};
-
-let _req = (type, endpoint) => {
-  let timeSinceLastRequest = Date.now() - lastRequestTime;
-  lastRequestTime = Date.now();
-
-  return new Promise((resolve, reject) => {
-    const options = {
-      hostname: Endpoints.BASEURL,
-      path: `${Endpoints.API}${endpoint}`,
-      method: type,
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    };
-
-    if (timeSinceLastRequest >= rateLimitInterval) {
-      makeRequest(options).then((response) => {
-        resolve(response);
-      }).catch((error) => {
-        reject(error);
-      });
-    } else {
-      requestQueue.push({ 'type': type, 'endpoint': endpoint });
-      let nextRequest = requestQueue.length === 0 ? rateLimitInterval - timeSinceLastRequest : (requestQueue.length - 1) * rateLimitInterval + rateLimitInterval;
-      setTimeout(() => {
-        deleteRequestQueueElement(options.method, options.path);
-        makeRequest(options).then((response) => {
-          resolve(response);
-        }).catch((error) => {
-          reject(error);
-        });
-      }, nextRequest);
-    }
-  });
-};
-
-let makeRequest = (options) => {
-  return new Promise((resolve, reject) => {
-    const req = _HTTPS.request(options, (res) => {
-      let rawResponse = '';
-      res.setEncoding('utf8');
-
-      res.on('data', (d) => {
-        rawResponse += d;
-      });
-
-      res.on('end', () => {
-        if (res.statusCode === 200) {
-          try {
-            let response = JSON.parse(rawResponse);
-            resolve(response);
-          } catch (err) {
-            reject(Error('Parse JSON response'));
-          }
-        } else if (res.statusCode === 400) {
-          reject(Error(`Status Code ${res.statusCode}: Value for ${options.path} does not exist`));
-        } else {
-          reject(Error(`status Code ${res.statusCode}: Invalid request for ${options.path}`));
-        }
-      });
-    });
-
-    req.on('error', (error) => {
-      reject(error);
-    });
-
-    req.end();
-  });
-};
-
-let deleteRequestQueueElement = (type, endpoint) => {
-  let arrayIndex = requestQueue.findIndex((request) => {
-    return request.type === type && request.endpoint === endpoint;
-  });
-  requestQueue.splice(arrayIndex, 1);
 };
 
 module.exports = hlAPI;

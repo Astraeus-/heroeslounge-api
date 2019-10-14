@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node test.js",
-    "test": "eslint .",
-    "fix": "eslint . --fix"
+    "eslint": "eslint .",
+    "eslint:fix": "eslint . --fix"
   },
   "author": "Astraeus-",
   "bugs": {
