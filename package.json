@@ -8,6 +8,9 @@
     "eslint": "eslint .",
     "eslint:fix": "eslint . --fix"
   },
+  "repository": {
+    "url": "https://github.com/Astraeus-/heroeslounge-api"
+  },
   "author": "Astraeus-",
   "bugs": {
     "url": "https://github.com/Astraeus-/heroeslounge-api/issues"
