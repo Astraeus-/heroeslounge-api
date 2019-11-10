@@ -435,7 +435,7 @@ const hlAPI = {
   /**
    * Get picks, bans and wins for all heroes for a season.
    * @param {number} slothID - The ID of the sloth.
-   * @param {number} seasonID - The ID of the season
+   * @param {number} seasonID - The ID of the season.
    * @returns {Promise<object>} An object indexed by hero names.
    */
   getSlothHerostatsSeason: (slothID, seasonID) => {
@@ -483,6 +483,54 @@ const hlAPI = {
    */
   getTeams: (limit) => {
     return handler.reqMulti('get', endpoints.TEAMS(), limit);
+  },
+
+  /**
+   * Get picks bans and wins for all heroes.
+   * @param {number} teamID - The ID of the team.
+   * @returns {Promise<object>} An object indexed by hero names.
+   */
+  getTeamHerostats: (teamID) => {
+    if (!teamID) throw Error('Team ID is not defined');
+
+    return handler.request('get', endpoints.TEAM_HEROSTATS(teamID));
+  },
+
+  /**
+   * Get picks bans and wins for all heroes for a season.
+   * @param {number} teamID - The ID of the team.
+   * @param {number} seasonID - The ID of the season.
+   * @returns {Promise<object>} An object indexed by hero names.
+   */
+  getTeamHerostatsSeason: (teamID, seasonID) => {
+    if (!teamID) throw Error('Team ID is not defined');
+    if (!seasonID) throw Error('Season ID is not defined');
+
+    return handler.request('get', endpoints.TEAM_HEROSTATS_SEASON(teamID, seasonID));
+  },
+
+  /**
+   * Get picks by, against and winrate for all maps.
+   * @param {number} teamID - The ID of the team.
+   * @returns {Promise<object>} An object indexed by map names.
+   */
+  getTeamMapstats: (teamID) => {
+    if (!teamID) throw Error('Team ID is not defined');
+
+    return handler.request('get', endpoints.TEAM_MAPSTATS(teamID));
+  },
+
+  /**
+   * Get picks by, against and winrate for all maps for a season.
+   * @param {number} teamID - The ID of the team.
+   * @param {number} seasonID - The ID of the season.
+   * @returns {Promise<object>} An object indexed by map names.
+   */
+  getTeamMapstatsSeason: (teamID, seasonID) => {
+    if (!teamID) throw Error('Team ID is not defined');
+    if (!seasonID) throw Error('Season ID is not defined');
+
+    return handler.request('get', endpoints.TEAM_MAPSTATS_SEASON(teamID, seasonID));
   },
 
   /**

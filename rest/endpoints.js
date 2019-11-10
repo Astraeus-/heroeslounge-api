@@ -144,6 +144,18 @@ module.exports.TEAMS = (teamID) => {
 module.exports.TEAMS_ALL = () => {
   return '/teamsAll';
 };
+module.exports.TEAM_HEROSTATS = (teamID) => {
+  return `/teams/${teamID}/herostatistics`;
+};
+module.exports.TEAM_HEROSTATS_SEASON = (teamID, seasonID) => {
+  return `/teams/${teamID}/season/${seasonID}/herostatistics`;
+};
+module.exports.TEAM_MAPSTATS = (teamID) => {
+  return `/teams/${teamID}/mapstatistics`;
+};
+module.exports.TEAM_MAPSTATS_SEASON = (teamID, seasonID) => {
+  return `/teams/${teamID}/season/${seasonID}/mapstatistics`;
+};
 module.exports.TEAM_SLOTHS = (teamID) => {
   return `/teams/${teamID}/sloths`;
 };
