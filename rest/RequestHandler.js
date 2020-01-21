@@ -1,12 +1,13 @@
 const https = require('https');
 
 /* Heroes Lounge API information */
-const VERSION = 'v1';
+const VERSION = 'v2';
 const BASEURL = 'heroeslounge.gg';
 const API = `/api/${VERSION}`;
 
 class RequestHandler {
-  constructor() {
+  constructor(apiKey = '') {
+    this.apiKey = apiKey;
     this.resetInterval = 500;
     this.reset = 0;
     this.processing = false;
@@ -19,9 +20,16 @@ class RequestHandler {
       path: `${API}${endpoint}`,
       method: method,
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'key': this.apiKey
       }
     };
+
+    // Handle routes that are available on the old v1 api
+    const isV2Route = endpoint.match(/\/teams\/\d+\/logo/g) === null && endpoint.match(/\/matches\/\d+\/teams/g) === null && endpoint.match(/^\/matches\/\d+$/g) === null;
+    if (!isV2Route) {
+      options.path = `/api/v1${endpoint}`;
+    }
 
     return new Promise((resolve, reject) => {
       let attempts = 0;
@@ -156,4 +164,4 @@ class RequestHandler {
   }
 }
 
-module.exports = new RequestHandler();
+module.exports = RequestHandler;
