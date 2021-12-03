@@ -1,7 +1,7 @@
 const RequestHandler = require('./rest/RequestHandler.js');
 const endpoints = require('./rest/endpoints.js');
 
-class Client {
+module.exports.Client = class Client {
   constructor(token) {
     this.requestHandler = new RequestHandler(token);
   }
@@ -606,7 +606,4 @@ class Client {
   getTwitchChannels (limit) {
     return this.requestHandler.reqMulti('get', endpoints.TWITCH_CHANNELS(), limit);
   }
-
 }
-
-module.exports = Client; 
